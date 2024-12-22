@@ -1,3 +1,0 @@
-1.1
-https://github.com/Andergr0ynd/helperforradmir/releases/download/v1.1/moonloader.zip
-https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/RegKeys.txt
