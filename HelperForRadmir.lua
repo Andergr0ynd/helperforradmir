@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.985")
+script_version("v0.986")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -89,22 +89,22 @@ function imgui.OnDrawFrame()
     -- но для передачи значения по указателю - обязательно напрямую
     -- тут main_window_state передаётся функции imgui.Begin, чтобы можно было отследить закрытие окна нажатием на крестик
     imgui.Begin('MVD-Helper | Settings', main_window_state)
-  if imgui.InputText(u8'Имя Фамилия', namebuffer) then
+  if imgui.InputText('Имя Фамилия', namebuffer) then
     ini.player.name = u8:decode(namebuffer.v)
     inicfg.save(ini, IniFilename)
     end
 
-      if imgui.InputText(u8'Тэг', tagbuffer) then
+      if imgui.InputText('Тэг', tagbuffer) then
     ini.player.tag = u8:decode(tagbuffer.v)
     inicfg.save(ini, IniFilename)
     end
 
-      if imgui.InputText(u8'Звание', rangbuffer) then
+      if imgui.InputText('Звание', rangbuffer) then
     ini.player.rang = u8:decode(rangbuffer.v)
     inicfg.save(ini, IniFilename)
     end
 
-      if imgui.InputText(u8'Отдел', departmentbuffer) then
+      if imgui.InputText('Отдел', departmentbuffer) then
     ini.player.department = u8:decode(departmentbuffer.v)
     inicfg.save(ini, IniFilename)
     end
@@ -116,8 +116,8 @@ function main()
     if not isSampfuncsLoaded() or not isSampLoaded() then
         return
     end
-    sampAddChatMessage(tag .. 'Все файлы успешно загружены и готовы к игре..', -1)
-    sampAddChatMessage(tag .. 'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
+    sampAddChatMessage(tag .. u8:decode'Все файлы успешно загружены и готовы к игре..', -1)
+    sampAddChatMessage(tag .. u8:decode'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
     
 -- Команды
     sampRegisterChatCommand('mhelp', mhelp)
@@ -153,7 +153,7 @@ function main()
 
     for i, v in ipairs(sounds) do
         if not doesFileExist(getWorkingDirectory()..'\\sounds\\'..v['file_name']) then
-            sampAddChatMessage('Загружаю: ' .. v['file_name'], -1)
+            sampAddChatMessage(u8:decode'Загружаю: ' .. v['file_name'], -1)
             downloadUrlToFile(v['url'], getWorkingDirectory()..'\\sounds\\'..v['file_name'])
         end
 
@@ -183,7 +183,7 @@ function playRandomSound()
         setAudioStreamState(stream, as_action.PLAY)
         setAudioStreamVolume(stream, 70)
     else
-        sampAddChatMessage('Нет доступных звуков для воспроизведения.', -1)
+        sampAddChatMessage(u8:decode'Нет доступных звуков для воспроизведения.', -1)
     end
 end
 
@@ -200,7 +200,7 @@ end
 function mhelp()
     lua_thread.create(function() -- Создаем новый поток
         wait(100) -- Ждём 5 секунд
-        sampShowDialog(1, '{006AFF}MVD Helper: {FFFFFF}Список команд',' \n {FFFFFF}/mhelp - Просмотр списка существующих команд \n /msm - Начать отслеживать преступников \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск | Необходима опра на снятие \n /msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список КоАП', u8:decode' \n {FFFFFF}/mhelp - Просмотр списка существующих команд \n /msm - Начать отслеживать преступников \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск | Необходима опра на снятие \n /msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
     end) -- Тут наш поток умирает :(
 end
 
@@ -229,7 +229,7 @@ end
 function mdoc(arg)
     if arg:find('(%d+)') then
     lua_thread.create(function()
-    sampSendChat('Здравия желаю,вас беспокоит '..ini.player.rang..' '..ini.player.department..' - '..ini.player.name..'.')
+    sampSendChat('Здравия желаю,вас беспокоит '..ini.player.rang..''..ini.player.department..' - '..ini.player.name..'.')
     wait(750)
     sampSendChat('/me отдал честь')
     wait(750)
