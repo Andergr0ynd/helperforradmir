@@ -54,6 +54,7 @@ function main()
     if autoupdate_loaded and enable_autoupdate and Update then
         pcall(Update.check, Update.json_url, Update.prefix, Update.url)
     end
+    end
 -- Отвечает за автообновление
         if isKeyDown(18) and isKeyJustPressed(49) then -- ALT + 1
             sampShowDialog(6405, "{006AFF}MVD Helper", u8:decode"\n 1 [MVD] Представиться \n 2. [MVD] Взял документы \n 3. [MVD] Надеть наручники \n 4. [MVD] Вести за собой", "Закрыть", nil, 2)
