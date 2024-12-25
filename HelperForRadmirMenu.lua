@@ -57,7 +57,7 @@ function main()
     if result then
     local id = tonumber(input)
     if id ~= nil then
-    sampSendChat('Здравия желаю__, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
+    sampSendChat('Здравия желаю, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
     wait(750)
     sampSendChat('/me отдал честь')
     wait(750)
