@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.983")
+script_version("v0.984")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -141,6 +141,8 @@ function main()
     sampRegisterChatCommand('mescort', mescort)
     sampRegisterChatCommand('mbreak_door', mbreak_door)
     sampRegisterChatCommand('mattach', mattach)
+    sampRegisterChatCommand('miranda', miranda)
+    sampRegisterChatCommand('photo', photo)
     sampRegisterChatCommand('koap1', koap1)
     sampRegisterChatCommand('koap2', koap2)
     sampRegisterChatCommand('koap3', koap3)
@@ -582,6 +584,51 @@ function mattach()
     wait(1000)
     sampSendChat('/c 060')
         end)
+    end
+
+
+function miranda()
+    lua_thread.create(function()
+    sampSendChat(u8:decode'Гражданин, Вы будете задержаны до выяснения обстоятельств.')
+    wait(900)
+    sampSendChat(u8:decode'Если вы не согласны с задержанием, то Вы можете обратиться в суд.')
+    wait(900)
+    sampSendChat(u8:decode'Вы имеете право на адвоката.')
+    wait(900)
+    sampSendChat(u8:decode'/n ->>> /adlist')
+    wait(900)
+    sampSendChat(u8:decode'Советуем хранить молчание.')
+    wait(900)
+    sampSendChat(u8:decode'Так как все Ваши слова будут использованы против Вас.')
+        end)
+    end
+
+function photo(arg)
+    if arg:find('(%d+)') then
+    lua_thread.create(function()
+    sampSendChat(u8:decode'/do На человеке надеты вещи.')
+    wait(900)
+    sampSendChat(u8:decode'/me сорвал все лишнее, что мешает для опознания по лицу')
+    wait(900)
+    sampSendChat(u8:decode'/do Вещи упали на землю.')
+    wait(900)
+    sampSendChat(u8:decode'/do КПК в руках.')
+    wait(900)
+    sampSendChat(u8:decode'/me зашел в приложение МВД')
+    wait(900)
+    sampSendChat(u8:decode'/police_tablet ')
+    wait(900)
+    sampSendChat(u8:decode'/me сфотографировав человека, загрузил фото в приложении')
+    wait(900)
+    sampSendChat(u8:decode'/do Поиск по фото.')
+    wait(900)
+    sampSendChat(u8:decode'/do Человек распознан')
+    wait(900)
+    sampSendChat("/id "..arg)
+        end)
+            else
+            sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
+        end
     end
 
 function koap1()
