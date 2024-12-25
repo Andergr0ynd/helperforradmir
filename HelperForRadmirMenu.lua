@@ -49,12 +49,11 @@ inicfg.save(ini, IniFilename);
 function main()
     repeat wait(0) until isSampAvailable()
     while true do
-        wait(0)
-        -- Отвечает за автообновление
-    if autoupdate_loaded and enable_autoupdate and Update then
+        if autoupdate_loaded and enable_autoupdate and Update then
         pcall(Update.check, Update.json_url, Update.prefix, Update.url)
     end
-    end
+        wait(0)
+        -- Отвечает за автообновление
 -- Отвечает за автообновление
         if isKeyDown(18) and isKeyJustPressed(49) then -- ALT + 1
             sampShowDialog(6405, "{006AFF}MVD Helper", u8:decode"\n 1 [MVD] Представиться \n 2. [MVD] Взял документы \n 3. [MVD] Надеть наручники \n 4. [MVD] Вести за собой", "Закрыть", nil, 2)
