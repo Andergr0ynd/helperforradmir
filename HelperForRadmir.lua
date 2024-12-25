@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.985")
+script_version("v0.984")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -248,13 +248,13 @@ function mdoc(arg)
 
 function mdoc1()
     lua_thread.create(function()
-    sampSendChat('Предъявите документы, а также отстегните ремень безопасности.')
+    sampSendChat(u8:decode'Предъявите документы, а также отстегните ремень безопасности.')
     wait(750)
-    sampSendChat('/n /pass [id]; /rem; /carpass [id]')
+    sampSendChat(u8:decode'/n /pass [id]; /rem; /carpass [id]')
     wait(750)
-    sampSendChat('/me достал ориентировку и сравнил ее с лицом гражданина')
+    sampSendChat(u8:decode'/me достал ориентировку и сравнил ее с лицом гражданина')
     wait(750)
-    sampSendChat('/todo Процесс проверки*При необходимости, мы задержим вас на неопределенное время.')
+    sampSendChat(u8:decode'/todo Процесс проверки*При необходимости, мы задержим вас на неопределенное время.')
         end)
     end
 
