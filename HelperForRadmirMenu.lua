@@ -1,5 +1,5 @@
-script_name("HelperForRadmir")
-script_version("v0.984")
+script_name("HelperForRadmirMenu")
+script_version("v0.985")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -18,7 +18,7 @@ local u8 = encoding.UTF8
 
 -- inicfg
 local inicfg = require('inicfg');
-local IniFilename = 'setting.ini'
+local IniFilename = 'settings.ini'
 local ini = inicfg.load({
     player = {
         name = 'Иван Иванов',
@@ -70,7 +70,7 @@ function main()
     if result then
     local id = tonumber(input)
     if id ~= nil then
-    sampSendChat(u8:decode'Здравия желаю__, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
+    sampSendChat(u8:decode'Здравия желаю, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
     wait(750)
     sampSendChat(u8:decode'/me отдал честь')
     wait(750)
@@ -117,7 +117,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/me надел наручники на человека напротив')
     wait(700)
-    sampSendChat('/cuff ' .. id)
+    sampSendChat('/n ' ..id)
            end
        end
     end
