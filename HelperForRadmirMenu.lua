@@ -68,7 +68,6 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
     if id ~= nil then
     sampSendChat(u8:decode'Здравия желаю, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
     wait(750)
@@ -111,13 +110,12 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/do Наручники в руке.')
     wait(700)
     sampSendChat(u8:decode'/me надел наручники на человека напротив')
     wait(700)
-    sampSendChat('/n ' ..id)
+    sampSendChat('/cuff ' ..input)
            end
        end
     end
@@ -128,13 +126,12 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me схватил задержанного за руки')
     wait(700)
     sampSendChat(u8:decode'/me заломал задержанного и повёл задержанного')
     wait(700)
-    sampSendChat("/escort " ..id)
+    sampSendChat("/escort " ..input)
            end
        end
     end
@@ -145,15 +142,14 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me открыл дверь автомобиля')
     wait(700)
     sampSendChat(u8:decode'/do Дверь открыта.')
     wait(700)
     sampSendChat(u8:decode'/me посадил преступника в патрульный автомобиль')
     wait(700)
-    sampSendChat("/putpl " ..id)
+    sampSendChat("/putpl " ..input)
            end
        end
     end
@@ -164,15 +160,14 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me снял наручники с преступника')
     wait(700)
     sampSendChat(u8:decode'/me повесил наручники на пояс')
     wait(700)
     sampSendChat(u8:decode'/do Наручники на поясе.')
     wait(700)
-    sampSendChat("/uncuff " ..id)
+    sampSendChat("/uncuff " ..input)
            end
        end
     end
@@ -183,13 +178,12 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me отпустил преступника')
     wait(700)
     sampSendChat(u8:decode'/do Человек свободен.')
     wait(700)
-    sampSendChat("/escort " ..id)
+    sampSendChat("/escort " ..input)
            end
        end
     end
@@ -200,13 +194,12 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me открыл дверь авто')
     wait(700)
     sampSendChat(u8:decode'/me вытащил человека с авто')
     wait(700)
-    sampSendChat("/ejectout " ..id)
+    sampSendChat("/ejectout " ..input)
            end
        end
     end
@@ -217,8 +210,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me открыл двери МВД')
     wait(700)
     sampSendChat(u8:decode'/do Двери открыты.')
@@ -227,7 +219,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/do Человек в участке.')
     wait(700)
-    sampSendChat("/arrest " ..id)
+    sampSendChat("/arrest " ..input)
            end
        end
     end
@@ -238,8 +230,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me взял рацию в руки')
     wait(700)
     sampSendChat(u8:decode'/me сообщил данные о нарушителе диспетчеру')
@@ -248,7 +239,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/do Нарушитель объявлен в розыск.')
     wait(700)
-    sampSendChat("/su " ..id)
+    sampSendChat("/su " ..input)
            end
        end
     end
@@ -259,8 +250,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me достал планшет')
     wait(700)
     sampSendChat(u8:decode'/do Планшет в руке.')
@@ -275,7 +265,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/me убрал планшет')
     wait(700)
-    sampSendChat("/ticket " ..id)
+    sampSendChat("/ticket " ..input)
            end
        end
     end
@@ -286,8 +276,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me взял права, затем переложил их в левую руку')
     wait(700)
     sampSendChat(u8:decode'/me взял блокнот и ручку в правую руку')
@@ -302,7 +291,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/do Водительские права изъяты.')
     wait(700)
-    sampSendChat("/takelic " ..id)
+    sampSendChat("/takelic " ..input)
            end
        end
     end
@@ -313,8 +302,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me взял лицензию на оружие, затем переложил их в левую руку')
     wait(700)
     sampSendChat(u8:decode'/me взял блокнот и ручку в правую руку')
@@ -329,7 +317,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/do Лицензия на оружие изъята.')
     wait(700)
-    sampSendChat("/takelic " ..id)
+    sampSendChat("/takelic " ..input)
            end
        end
     end
@@ -340,8 +328,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me ударил прикладом АК-47 по стеклу автомобиля')
     wait(700)
     sampSendChat(u8:decode'/do Стекло разбито.')
@@ -350,7 +337,7 @@ function main()
     wait(700)
     sampSendChat(u8:decode'/me вытащил человека и повалил на землю')
     wait(700)
-    sampSendChat("/ejectout " ..id)
+    sampSendChat("/ejectout " ..input)
                    end
                 end
             end
@@ -372,15 +359,14 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/me взял рацию в руки')
     wait(700)
     sampSendChat(u8:decode'/do Рация в руках.')
     wait(700)
     sampSendChat(u8:decode'/me сообщил диспетчеру, что начал погоню за нарушителем')
     wait(700)
-    sampSendChat("/pg " ..id)
+    sampSendChat("/pg " ..input)
                     end
                 end
             end
@@ -390,8 +376,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/do Перчатки с надписью "МВД" на руках.')
     wait(900)
     sampSendChat(u8:decode'/me начал ощупывать человека напротив')
@@ -408,7 +393,7 @@ function main()
     wait(900)
     sampSendChat(u8:decode'/me усмехнулся')
     wait(900)
-    sampSendChat("/search " ..id)
+    sampSendChat("/search " ..input)
                     end
                 end
             end
@@ -432,8 +417,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    local id = tonumber(input)
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'/do На человеке надеты вещи.')
     wait(900)
     sampSendChat(u8:decode'/me сорвал все лишнее, что мешает для опознания по лицу')
@@ -452,7 +436,7 @@ function main()
     wait(900)
     sampSendChat(u8:decode'/do Человек распознан')
     wait(900)
-    sampSendChat("/id "..id)
+    sampSendChat("/id "..input)
                     end
                 end
             end
