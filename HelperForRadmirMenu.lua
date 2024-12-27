@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.985")
+script_version("v0.986")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -68,7 +68,7 @@ function main()
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
-    if id ~= nil then
+    if input ~= nil then
     sampSendChat(u8:decode'Здравия желаю, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
     wait(750)
     sampSendChat(u8:decode'/me отдал честь')
@@ -77,7 +77,7 @@ function main()
     wait(750)
     sampSendChat(u8:decode'/me достал из нагрудного кармана удостоверение и предъявил его')
     wait(750)
-    sampSendChat(u8:decode"/doc " .. id)
+    sampSendChat(u8:decode"/doc " ..input)
     wait(750)
     sampSendChat(u8:decode'/anim 6 3')
     wait(750)
