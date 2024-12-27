@@ -40,15 +40,15 @@ end
 -- Скачивание звуков для ареста
 local sounds = {
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=676e6b7d&is=676d19fd&hm=cd2cb76088b947442563717c0e2fb109e560ba176ac549ef496237b41d845204&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=676f143d&is=676dc2bd&hm=e44b1f1fc676cd1b1b916e24b23b840d5a0c54472387fe9cd8740175068dc6d6&',
         file_name = 'arrest1.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=676e6b7d&is=676d19fd&hm=6088b4bed0787164d6d70915145b898569b7c4f92987c40e25cc02e127b2b0ae&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=676f143d&is=676dc2bd&hm=1c6ae6c6002a8bc945fbf77033e900413222208f290e37c8228902f8d9359bcc&',
         file_name = 'arrest2.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=676e6b7d&is=676d19fd&hm=fd959bb74d0cdd8ce7eb46d155ce87065d23c524511b8d7ff155eff4b8290ba1&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=676f143d&is=676dc2bd&hm=c358e2fd2de26c7d662be17e6c1be50016157de1f0f6d4c6c8bf639fe5ae3095&',
         file_name = 'arrest3.mp3',
     },
 }
