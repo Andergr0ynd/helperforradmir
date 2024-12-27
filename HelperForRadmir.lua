@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.985")
+script_version("v0.986")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
