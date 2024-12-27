@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.986")
+script_version("v0.985")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -64,7 +64,7 @@ function main()
 
 
     if list == 0 then
-    sampSendChat(u8:decode'')
+    sampAddChatMessage(tag .. u8:decode'Меню закрыто', -1)
     end      
 
     -- /doc
