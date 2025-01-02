@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.985")
+script_version("v0.987")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -58,7 +58,7 @@ function main()
     wait(0)
 
     if isKeyDown(VK_F3) then -- ALT + 1
-    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 0 [MVD] Представиться \n 1. [MVD] Взял документы \n 2. [MVD] Надеть наручники \n 3. [MVD] Повести за собой \n 4. [MVD] Посадить преступника в авто \n 5. [MVD] Снять наручники \n 6. [MVD] Не вести за собой \n 7. [MVD] Высадить игрока из авто \n 8. [MVD] Посадить преступника в КПЗ \n 9. [MVD] Объявить преступника в розыск \n 10. [MVD] Выписать штраф \n 11. [MVD] Изъять права у нарушителя \n 12. [MVD] Изъять лицензию на оружие у нарушителя \n 13. [MVD] Вытащить из авто силой \n 14. [MVD] Мегафон \n 15. [MVD] Начать погоню \n 16 [MVD] Провести обыск \n 17 [MVD] Миранда \n 18 [MVD] Пробить по базе \n ", u8:decode("Закрыть"), nil, 2)
+    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 0 [MVD] Представиться (Омон) \n 1 [MVD] Представиться \n 2 [MVD] Взял документы \n 3 [MVD] Надеть наручники \n 4 [MVD] Повести за собой \n 5 [MVD] Посадить преступника в авто \n 6 [MVD] Снять наручники \n 7 [MVD] Не вести за собой \n 8  [MVD] Высадить игрока из авто \n 7 [MVD] Посадить преступника в КПЗ \n 8 [MVD] Объявить преступника в розыск \n 9 [MVD] Выписать штраф \n 10. [MVD] Изъять права у нарушителя \n 11 [MVD] Изъять лицензию на оружие у нарушителя \n 12 [MVD] Вытащить из авто силой \n 13 [MVD] Мегафон \n 14 [MVD] Начать погоню \n 15 [MVD] Провести обыск \n 16 [MVD] Миранда \n 17 [MVD] Пробить по базе \n ", u8:decode("Закрыть"), nil, 2)
     while sampIsDialogActive(6405) do wait(100) end
     local _, button, list, _ = sampHasDialogRespond(6405)
 
@@ -67,8 +67,25 @@ function main()
     sampAddChatMessage(tag .. u8:decode'Меню закрыто', -1)
     end      
 
-    -- /doc
     if list == 1 then -- и для остальных результатов соответственно
+    sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
+    while sampIsDialogActive(100) do wait(0) end
+    local result, button, list, input = sampHasDialogRespond(100)
+    if result then
+    if input ~= nil then
+    sampSendChat(u8:decode'Работает сотрудник ОМОН | Позывной: '..ini.player.name..'.')
+    wait(750)
+    sampSendChat(u8:decode'Предьявите пожалуйста ваши документы, удостоверяющие вашу личность.')
+    wait(750)
+    sampSendChat(u8:decode'Если вы в течении 30 секунд не предъявите мне документы я сочту это за неподчинение!')
+    wait(750)
+    sampSendChat(u8:decode"/doc " ..input)
+            end
+        end
+    end
+
+    -- /doc
+    if list == 2 then -- и для остальных результатов соответственно
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -93,7 +110,7 @@ function main()
        end
     end
         
-    if list == 2 then -- и для остальных результатов соответственно
+    if list == 3 then -- и для остальных результатов соответственно
     sampSendChat(u8:decode'/me взял документы у человека напротив')
     wait(750)
     sampSendChat(u8:decode'/do Документы в руке.')
@@ -110,7 +127,7 @@ function main()
     end
 
     -- /cuff
-    if list == 3 then
+    if list == 4 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -126,7 +143,7 @@ function main()
     end
 
     -- /escort
-    if list == 4 then
+    if list == 5 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -142,7 +159,7 @@ function main()
     end
 
     -- /putpl
-    if list == 5 then
+    if list == 6 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -160,7 +177,7 @@ function main()
     end
 
     -- /uncuff
-    if list == 6 then
+    if list == 7 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -178,7 +195,7 @@ function main()
     end
 
     -- /escort
-    if list == 7 then
+    if list == 8 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -194,7 +211,7 @@ function main()
     end
 
     -- /ejectout
-    if list == 8 then
+    if list == 9 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -210,7 +227,7 @@ function main()
     end
 
     -- /arrest
-    if list == 9 then
+    if list == 10 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -230,7 +247,7 @@ function main()
     end
 
     -- /su
-    if list == 10 then
+    if list == 11 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -250,7 +267,7 @@ function main()
     end
 
     -- /ticket
-    if list == 11 then
+    if list == 12 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID, Сумму, Причину", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -276,7 +293,7 @@ function main()
     end
 
     -- /takelic car
-    if list == 12 then
+    if list == 13 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID, Причину", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -302,7 +319,7 @@ function main()
     end
 
     -- /takelic gun
-    if list == 13 then
+    if list == 14 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -328,7 +345,7 @@ function main()
     end
 
     -- /ejectout
-    if list == 14 then
+    if list == 15 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -348,7 +365,7 @@ function main()
             end
    
   -- 
-    if list == 15 then
+    if list == 16 then
     sampSendChat(u8:decode'/me взял с плеча рацию в руки')
     wait(700)
     sampSendChat(u8:decode'/me зажал кнопку разговора на рации')
@@ -359,7 +376,7 @@ function main()
     end
 
 
-    if list == 16 then
+    if list == 17 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -376,7 +393,7 @@ function main()
                 end
             end
 
-    if list == 17 then
+    if list == 18 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -403,7 +420,7 @@ function main()
                 end
             end
 
-    if list == 18 then
+    if list == 19 then
     sampSendChat(u8:decode'Гражданин, Вы будете задержаны до выяснения обстоятельств.')
     wait(900)
     sampSendChat(u8:decode'Если вы не согласны с задержанием, то Вы можете обратиться в суд.')
@@ -417,7 +434,7 @@ function main()
     sampSendChat(u8:decode'Так как все Ваши слова будут использованы против Вас.')
     end
 
-    if list == 19 then
+    if list == 20 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
