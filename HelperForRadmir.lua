@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.986")
+script_version("v0.987")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -40,15 +40,15 @@ end
 -- Скачивание звуков для ареста
 local sounds = {
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=676f143d&is=676dc2bd&hm=e44b1f1fc676cd1b1b916e24b23b840d5a0c54472387fe9cd8740175068dc6d6&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=6777a5fd&is=6776547d&hm=f8eecc47b09872f41a386467dbe6efb2a79d6035cde7ddcd300099df41e949f4&',
         file_name = 'arrest1.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=676f143d&is=676dc2bd&hm=1c6ae6c6002a8bc945fbf77033e900413222208f290e37c8228902f8d9359bcc&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=6777a5fd&is=6776547d&hm=99783254f4b3dbfd23d2001cf2712762f91468acdb433fbee80ae79e8556ff37&',
         file_name = 'arrest2.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=676f143d&is=676dc2bd&hm=c358e2fd2de26c7d662be17e6c1be50016157de1f0f6d4c6c8bf639fe5ae3095&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6777a5fd&is=6776547d&hm=e4dea780780366c3978a1c7a9c33f3423ff3adcc0166e3974f40c2feebf782a4&',
         file_name = 'arrest3.mp3',
     },
 }
@@ -123,6 +123,7 @@ function main()
     sampRegisterChatCommand('mhelp', mhelp)
     sampRegisterChatCommand('msm', msm)
     sampRegisterChatCommand('mdoc', mdoc)
+    sampRegisterChatCommand('omondoc', omondoc)
     sampRegisterChatCommand('mdoc1', mdoc1)
     sampRegisterChatCommand('mdoc2', mdoc2)
     sampRegisterChatCommand('mdoc3', mdoc3)
@@ -223,7 +224,7 @@ end
 function mhelp()
     lua_thread.create(function() -- Создаем новый поток
         wait(100) -- Ждём 5 секунд
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}/mhelp - Просмотр списка существующих команд \n /koap1 - /koap21 - КоАП серверов (Примечание. У /koap7 есть вторая страница /koap7_2)\n /msm - Начать отслеживать преступников \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск | Необходима опра на снятие \n /msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}/mhelp - Просмотр списка существующих команд \n /omondoc - Представиться (Омон) \n /koap1 - /koap21 - КоАП серверов (Примечание. У /koap7 есть вторая страница /koap7_2)\n /msm - Начать отслеживать преступников \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск | Необходима опра на снятие \n /msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
     end) -- Тут наш поток умирает :(
 end
 
@@ -246,6 +247,22 @@ end
             else
         sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
             end
+        end
+    end
+
+function omondoc(arg)
+    if arg:find('(%d+)') then
+    lua_thread.create(function()
+    sampSendChat(u8:decode'Работает сотрудник ОМОН | Позывной: '..ini.player.name..'.')
+    wait(750)
+    sampSendChat(u8:decode'Предьявите пожалуйста ваши документы, удостоверяющие вашу личность.')
+    wait(750)
+    sampSendChat(u8:decode'Если вы в течении 30 секунд не предъявите мне документы я сочту это за неподчинение!')
+    wait(750)
+    sampSendChat(u8:decode"/doc " ..id)
+        end)
+            else
+            sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
         end
     end
 
