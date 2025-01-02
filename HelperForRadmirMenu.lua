@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.987")
+script_version("v0.988")
 
 local name = "[Helper] " -- Тэг
 local color1 = "{fff000}" -- Серо-белый цвет
@@ -58,7 +58,7 @@ function main()
     wait(0)
 
     if isKeyDown(VK_F3) then -- ALT + 1
-    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 0 [MVD] Представиться (Омон) \n 1 [MVD] Представиться \n 2 [MVD] Взял документы \n 3 [MVD] Надеть наручники \n 4 [MVD] Повести за собой \n 5 [MVD] Посадить преступника в авто \n 6 [MVD] Снять наручники \n 7 [MVD] Не вести за собой \n 8  [MVD] Высадить игрока из авто \n 7 [MVD] Посадить преступника в КПЗ \n 8 [MVD] Объявить преступника в розыск \n 9 [MVD] Выписать штраф \n 10. [MVD] Изъять права у нарушителя \n 11 [MVD] Изъять лицензию на оружие у нарушителя \n 12 [MVD] Вытащить из авто силой \n 13 [MVD] Мегафон \n 14 [MVD] Начать погоню \n 15 [MVD] Провести обыск \n 16 [MVD] Миранда \n 17 [MVD] Пробить по базе", u8:decode("Закрыть"), nil, 2)
+    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Представиться (Омон) \n 2 [MVD] Представиться \n 3 [MVD] Взял документы \n 4 [MVD] Надеть наручники \n 5 [MVD] Повести за собой \n 6 [MVD] Посадить преступника в авто \n 7 [MVD] Снять наручники \n 8 [MVD] Не вести за собой \n 9  [MVD] Высадить игрока из авто \n 10 [MVD] Посадить преступника в КПЗ \n 11 [MVD] Объявить преступника в розыск \n 12 [MVD] Выписать штраф \n 13 [MVD] Изъять права у нарушителя \n 14 [MVD] Изъять лицензию на оружие у нарушителя \n 15 [MVD] Вытащить из авто силой \n 16 [MVD] Мегафон \n 17 [MVD] Начать погоню \n 18 [MVD] Провести обыск \n 19 [MVD] Миранда \n 20 [MVD] Пробить по базе \n 21 [MVD] Эвакуатор", u8:decode("Закрыть"), nil, 2)
     while sampIsDialogActive(6405) do wait(100) end
     local _, button, list, _ = sampHasDialogRespond(6405)
 
@@ -462,6 +462,48 @@ function main()
                     end
                 end
             end
+
+    if list == 21 then
+    sampSendChat(u8:decode'/do Бортовой компьютер Дорожно-Патрульной Службы выключен.')
+    wait(1500)
+    sampSendChat(u8:decode'/me включил бортовой компьютер Дорожно-Патрульной Службы')
+    wait(1500)
+    sampSendChat(u8:decode'/do Бортовой компьютер Дорожно-Патрульной Службы включён.')
+    wait(1500)
+    sampSendChat(u8:decode'/me нажал на кнопку "Фотография" и сделал фотографию')
+    wait(1500)
+    sampSendChat(u8:decode'/do Фотография сохранена на базе данных Дорожно-Патрульной Службы.')
+    wait(1500)
+    sampSendChat(u8:decode'/me нажал на кнопку выключения бортового компьютера Дорожно-Патрульной Службы')
+    wait(1500)
+    sampSendChat(u8:decode'/do Бортовой компьютер Дорожно-Патрульной Службы выключен.')
+    wait(1500)
+    sampSendChat(u8:decode'/me поставил эвакуатор на ручник')
+    wait(1500)
+    sampSendChat(u8:decode'/do Эвакуатор стоит на ручнике.')
+    wait(1500)
+    sampSendChat(u8:decode'/me отпустил кран эвакуатора')
+    wait(1500)
+    sampSendChat(u8:decode'/do Кран эвакуатора отпущен.')
+    wait(1500)
+    sampSendChat(u8:decode'/me зацепил транспортное средство')
+    wait(1500)
+    sampSendChat(u8:decode'/do Транспортное средство зацеплено.')
+    wait(1500)
+    sampSendChat(u8:decode'/me поднимает кран эвакуатора')
+    wait(1500)
+    sampSendChat(u8:decode'/do Кран эвакуатора поднят.')
+    wait(1500)
+    sampSendChat(u8:decode'/me эвакуирует транспортное средство')
+    wait(1500)
+    sampSendChat(u8:decode'/do Эвакуатор готов к движению.')
+    wait(1500)
+    sampSendChat(u8:decode'/me отпустил ручник на эвакуаторе')
+    wait(1500)
+    sampSendChat('/attach')
+    wait(1000)
+    sampSendChat('/c 060')
+    end
         end
     end
 end
