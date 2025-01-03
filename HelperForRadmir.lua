@@ -146,12 +146,12 @@ function main()
     local _, myid = sampGetPlayerIdByCharHandle(playerPed)
     if not isAvailableUser(users, sampGetPlayerNickname(myid)) then
         sampAddChatMessage(tag.. u8:decode'{FF0000}AHK не активирован. Обратитесь в Support за активацией!', -1)
-        print('AHK не активирован. Обратитесь в Support за активацией!')
+        print(u8:decode'AHK не активирован. Обратитесь в Support за активацией!')
         thisScript():unload()
     end
     if isAvailableUser(users, sampGetPlayerNickname(myid)) then
     sampAddChatMessage(tag.. u8:decode'{32CD32}AHK успешно активирован! Можете им пользоваться!', -1)
-    print('AHK успешно активирован! Можете им пользоваться!')
+    print(u8:decode'AHK успешно активирован! Можете им пользоваться!')
 
     sampAddChatMessage(tag .. u8:decode'Все файлы успешно загружены и готовы к игре..', -1)
     sampAddChatMessage(tag .. u8:decode'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
