@@ -1,10 +1,10 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.988")
+script_version("v0.989")
 
-local name = "[Helper] " -- Тэг
-local color1 = "{fff000}" -- Серо-белый цвет
-local color2 = "{969854}" -- Красный цвет для тэга
-local tag = color1 .. name .. color2 -- Готовый тэг
+local name = "[Helper] "
+local color1 = "{FFD700}" 
+local color2 = "{7FFFD4}" 
+local tag = color1 .. name .. color2 
 local inicfg = require 'inicfg'
 local key = require 'vkeys'
 local vkeys = require 'vkeys'
@@ -16,7 +16,6 @@ encoding.default = 'CP1251'
 u8 = encoding.UTF8
 local u8 = encoding.UTF8
 
--- inicfg
 local inicfg = require('inicfg');
 local IniFilename = 'settings.ini'
 local ini = inicfg.load({
@@ -29,12 +28,11 @@ local ini = inicfg.load({
 }, IniFilename);
 inicfg.save(ini, IniFilename);
 
--- для msm / setmark
 local msm = ''
 local act = false
 
--- Автообновление скрипта
-local enable_autoupdate = true -- false to disable auto-update + disable sending initial telemetry (server, moonloader version, script version, samp nickname, virtual volume serial number)
+
+local enable_autoupdate = true
 local autoupdate_loaded = false
 local Update = nil
 if enable_autoupdate then
@@ -49,15 +47,64 @@ if enable_autoupdate then
     end
 end
 
+function getTableUsersByUrl(url)
+    local n_file, bool, users = os.getenv('TEMP')..os.time(), false, {}
+    downloadUrlToFile(url, n_file, function(id, status)
+        if status == 6 then bool = true end
+    end)
+    while not doesFileExist(n_file) do wait(0) end
+    if bool then
+        local file = io.open(n_file, 'r')
+        for w in file:lines() do
+            local n, d = w:match('(.*): (.*)')
+            users[#users+1] = { name = n, date = d }
+        end
+        file:close()
+        os.remove(n_file)
+    end
+    return users
+end
+
+function isAvailableUser(users, name)
+    for i, k in pairs(users) do
+        if k.name == name then
+            local d, m, y = k.date:match('(%d+)%.(%d+)%.(%d+)')
+            local time = {
+                day = tonumber(d),
+                isdst = true,
+                wday = 0,
+                yday = 0,
+                year = tonumber(y),
+                month = tonumber(m),
+                hour = 0
+            }
+            if os.time(time) >= os.time() then return true end
+        end
+    end
+    return false
+end
+
+site = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/users.txt'
+
 function main()
-    repeat wait(0) until isSampAvailable()
+     while not isSampAvailable() do wait(0) end
     if autoupdate_loaded and enable_autoupdate and Update then
         pcall(Update.check, Update.json_url, Update.prefix, Update.url)
+    while sampGetCurrentServerName() == 'SA-MP' do wait(0) end
+    local users = getTableUsersByUrl(site)
+    local _, myid = sampGetPlayerIdByCharHandle(playerPed)
+    if not isAvailableUser(users, sampGetPlayerNickname(myid)) then
+    sampAddChatMessage(tag.. u8:decode'{FF0000}Меню так-же не активировано!', -1)
+    thisScript():unload()
+    end
+    if isAvailableUser(users, sampGetPlayerNickname(myid)) then
+    sampAddChatMessage(tag.. u8:decode'{32CD32}Меню активировано!', -1)
+    end
     end
     while true do
     wait(0)
 
-    if isKeyDown(VK_F3) then -- ALT + 1
+    if isKeyDown(VK_F3) then 
     sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Представиться (Омон) \n 2 [MVD] Представиться \n 3 [MVD] Взял документы \n 4 [MVD] Надеть наручники \n 5 [MVD] Повести за собой \n 6 [MVD] Посадить преступника в авто \n 7 [MVD] Снять наручники \n 8 [MVD] Не вести за собой \n 9  [MVD] Высадить игрока из авто \n 10 [MVD] Посадить преступника в КПЗ \n 11 [MVD] Объявить преступника в розыск \n 12 [MVD] Выписать штраф \n 13 [MVD] Изъять права у нарушителя \n 14 [MVD] Изъять лицензию на оружие у нарушителя \n 15 [MVD] Вытащить из авто силой \n 16 [MVD] Мегафон \n 17 [MVD] Начать погоню \n 18 [MVD] Провести обыск \n 19 [MVD] Миранда \n 20 [MVD] Пробить по базе \n 21 [MVD] Эвакуатор", u8:decode("Закрыть"), nil, 2)
     while sampIsDialogActive(6405) do wait(100) end
     local _, button, list, _ = sampHasDialogRespond(6405)
@@ -67,7 +114,7 @@ function main()
     sampAddChatMessage(tag .. u8:decode'Меню закрыто', -1)
     end      
 
-    if list == 1 then -- и для остальных результатов соответственно
+    if list == 1 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -85,7 +132,7 @@ function main()
     end
 
     -- /doc
-    if list == 2 then -- и для остальных результатов соответственно
+    if list == 2 then 
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -110,7 +157,7 @@ function main()
        end
     end
         
-    if list == 3 then -- и для остальных результатов соответственно
+    if list == 3 then 
     sampSendChat(u8:decode'/me взял документы у человека напротив')
     wait(750)
     sampSendChat(u8:decode'/do Документы в руке.')
