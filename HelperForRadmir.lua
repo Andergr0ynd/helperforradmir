@@ -1,10 +1,10 @@
 script_name("HelperForRadmir")
-script_version("v0.987")
+script_version("v0.989")
 
-local name = "[Helper] " -- Тэг
-local color1 = "{fff000}" -- Серо-белый цвет
-local color2 = "{969854}" -- Красный цвет для тэга
-local tag = color1 .. name .. color2 -- Готовый тэг
+local name = "[Helper] "
+local color1 = "{FFD700}" 
+local color2 = "{7FFFD4}"
+local tag = color1 .. name .. color2 
 local inicfg = require 'inicfg'
 local key = require 'vkeys'
 local vkeys = require 'vkeys'
@@ -16,12 +16,10 @@ encoding.default = 'CP1251'
 u8 = encoding.UTF8
 local u8 = encoding.UTF8
 
--- для msm / setmark
 local msm = ''
 local act = false
 
--- Автообновление скрипта
-local enable_autoupdate = true -- false to disable auto-update + disable sending initial telemetry (server, moonloader version, script version, samp nickname, virtual volume serial number)
+local enable_autoupdate = true
 local autoupdate_loaded = false
 local Update = nil
 if enable_autoupdate then
@@ -35,20 +33,18 @@ if enable_autoupdate then
         end
     end
 end
--- Автообновление скрипта
 
--- Скачивание звуков для ареста
 local sounds = {
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=6777a5fd&is=6776547d&hm=f8eecc47b09872f41a386467dbe6efb2a79d6035cde7ddcd300099df41e949f4&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=6778f77d&is=6777a5fd&hm=33976e6d725906433260f0af7bd01cf05a5323635813bef7fdabbaa9c089f566&',
         file_name = 'arrest1.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=6777a5fd&is=6776547d&hm=99783254f4b3dbfd23d2001cf2712762f91468acdb433fbee80ae79e8556ff37&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=6778f77d&is=6777a5fd&hm=c8b1fdd48a86a6e27df37b5585181c6c239fcb21620412e05bcf677687a990ce&',
         file_name = 'arrest2.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6777a5fd&is=6776547d&hm=e4dea780780366c3978a1c7a9c33f3423ff3adcc0166e3974f40c2feebf782a4&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6778f77d&is=6777a5fd&hm=ea63c4c19c3c88b26dbae527ab85095bba161f846508303d8c759cb03ed02a0c&',
         file_name = 'arrest3.mp3',
     },
 }
@@ -57,13 +53,11 @@ local as_action = require('moonloader').audiostream_state
 local sampev = require 'lib.samp.events'
 
 local sound_streams = {}
--- Скачивание звуков для ареста
 
 local imgui = require 'imgui'
 local mm = imgui.ImBool(false)
 local key = require 'vkeys'
 
--- inicfg
 local inicfg = require('inicfg');
 local IniFilename = 'settings.ini'
 local ini = inicfg.load({
@@ -76,18 +70,13 @@ local ini = inicfg.load({
 }, IniFilename);
 inicfg.save(ini, IniFilename);
 
--- буферы
 local namebuffer = imgui.ImBuffer(256)
 local tagbuffer = imgui.ImBuffer(256)
 local rangbuffer = imgui.ImBuffer(256)
 local departmentbuffer = imgui.ImBuffer(256)
 
--- одно из основных отличий от оригинального апи
--- все переменные, значения которых записываются в ImGui по указателю, могут использоваться только через специальные типы
 function imgui.OnDrawFrame()
-    imgui.SetNextWindowSize(imgui.ImVec2(600, 300), imgui.Cond.FirstUseEver) -- меняем размер
-    -- но для передачи значения по указателю - обязательно напрямую
-    -- тут main_window_state передаётся функции imgui.Begin, чтобы можно было отследить закрытие окна нажатием на крестик
+    imgui.SetNextWindowSize(imgui.ImVec2(600, 300), imgui.Cond.FirstUseEver)
     imgui.Begin('MVD-Helper | Settings', main_window_state)
   if imgui.InputText('Имя Фамилия', namebuffer) then
     ini.player.name = u8:decode(namebuffer.v)
@@ -111,15 +100,62 @@ function imgui.OnDrawFrame()
     imgui.End()
 end
 
+function getTableUsersByUrl(url)
+    local n_file, bool, users = os.getenv('TEMP')..os.time(), false, {}
+    downloadUrlToFile(url, n_file, function(id, status)
+        if status == 6 then bool = true end
+    end)
+    while not doesFileExist(n_file) do wait(0) end
+    if bool then
+        local file = io.open(n_file, 'r')
+        for w in file:lines() do
+            local n, d = w:match('(.*): (.*)')
+            users[#users+1] = { name = n, date = d }
+        end
+        file:close()
+        os.remove(n_file)
+    end
+    return users
+end
+
+function isAvailableUser(users, name)
+    for i, k in pairs(users) do
+        if k.name == name then
+            local d, m, y = k.date:match('(%d+)%.(%d+)%.(%d+)')
+            local time = {
+                day = tonumber(d),
+                isdst = true,
+                wday = 0,
+                yday = 0,
+                year = tonumber(y),
+                month = tonumber(m),
+                hour = 0
+            }
+            if os.time(time) >= os.time() then return true end
+        end
+    end
+    return false
+end
+
+site = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/users.txt'
 
 function main()
-    if not isSampfuncsLoaded() or not isSampLoaded() then
-        return
+    while not isSampAvailable() do wait(0) end
+        while sampGetCurrentServerName() == 'SA-MP' do wait(0) end
+    local users = getTableUsersByUrl(site)
+    local _, myid = sampGetPlayerIdByCharHandle(playerPed)
+    if not isAvailableUser(users, sampGetPlayerNickname(myid)) then
+        sampAddChatMessage(tag.. u8:decode'{FF0000}AHK не активирован. Обратитесь в Support за активацией!', -1)
+        print('AHK не активирован. Обратитесь в Support за активацией!')
+        thisScript():unload()
     end
+    if isAvailableUser(users, sampGetPlayerNickname(myid)) then
+    sampAddChatMessage(tag.. u8:decode'{32CD32}AHK успешно активирован! Можете им пользоваться!', -1)
+    print('AHK успешно активирован! Можете им пользоваться!')
+
     sampAddChatMessage(tag .. u8:decode'Все файлы успешно загружены и готовы к игре..', -1)
     sampAddChatMessage(tag .. u8:decode'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
-    
--- Команды
+
     sampRegisterChatCommand('mhelp', mhelp)
     sampRegisterChatCommand('msm', msm)
     sampRegisterChatCommand('mdoc', mdoc)
@@ -170,8 +206,8 @@ function main()
     mm.v = not mm.v
     imgui.Process =mm.v
   end)
+end
 
--- Отвечает за работу звуков
     if not doesDirectoryExist(getWorkingDirectory()..'\\sounds') then
         createDirectory(getWorkingDirectory()..'\\sounds')
     end
@@ -187,20 +223,16 @@ function main()
             table.insert(sound_streams, stream)
         end
     end
--- Отвечает за работу звуков
 
     while not isSampAvailable() do
         wait(100)
     end
 
--- Отвечает за автообновление
     if autoupdate_loaded and enable_autoupdate and Update then
         pcall(Update.check, Update.json_url, Update.prefix, Update.url)
     end
--- Отвечает за автообновление
 end
 
--- Функция для воспроизведения случайного звука
 function playRandomSound()
     if #sound_streams > 0 then
         local random_index = math.random(1, #sound_streams)
@@ -219,13 +251,11 @@ function sampev.onServerMessage(color, text)
 end
 
 
--- Начало команд 
--- /mhelp | Полный список команд
 function mhelp()
-    lua_thread.create(function() -- Создаем новый поток
-        wait(100) -- Ждём 5 секунд
+    lua_thread.create(function()
+        wait(100)
         sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}/mhelp - Просмотр списка существующих команд \n /omondoc - Представиться (Омон) \n /koap1 - /koap21 - КоАП серверов (Примечание. У /koap7 есть вторая страница /koap7_2)\n /msm - Начать отслеживать преступников \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск | Необходима опра на снятие \n /msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
-    end) -- Тут наш поток умирает :(
+    end)
 end
 
  function msm(arg)
