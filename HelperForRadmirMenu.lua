@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.989")
+script_version("v0.999")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
