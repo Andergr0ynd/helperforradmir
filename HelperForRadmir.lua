@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.990")
+script_version("v0.999")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -36,15 +36,15 @@ end
 
 local sounds = {
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588963987750912/arrest1.mp3?ex=6778f77d&is=6777a5fd&hm=33976e6d725906433260f0af7bd01cf05a5323635813bef7fdabbaa9c089f566&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6786267d&is=6784d4fd&hm=536c9f282a570473e189cbe4e2fa5b2f889afd8738737dc63f6cf72a53c2e004&',
         file_name = 'arrest1.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=6778f77d&is=6777a5fd&hm=c8b1fdd48a86a6e27df37b5585181c6c239fcb21620412e05bcf677687a990ce&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=6786267d&is=6784d4fd&hm=a4f6e5e842848379d93a7010040c549742f889179fca4d19460878b4b3d19eae&',
         file_name = 'arrest2.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6778f77d&is=6777a5fd&hm=ea63c4c19c3c88b26dbae527ab85095bba161f846508303d8c759cb03ed02a0c&',
+        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6786267d&is=6784d4fd&hm=536c9f282a570473e189cbe4e2fa5b2f889afd8738737dc63f6cf72a53c2e004&',
         file_name = 'arrest3.mp3',
     },
 }
