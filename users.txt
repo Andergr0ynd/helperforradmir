@@ -1,4 +1,5 @@
 Peta_Samp: 31.12.2030
+Straight_Monopoly: 31.12.2030
 Update_Underground: 31.12.2030
 Timur_Boom: 31.12.2030
 Denys_Hanasenko: 31.12.2030
