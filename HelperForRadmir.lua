@@ -1,20 +1,24 @@
 script_name("HelperForRadmir")
-script_version("v1.0")
+script_version("v0.999")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
 local color2 = "{7FFFD4}"
 local tag = color1 .. name .. color2 
-local inicfg = require 'inicfg'
-local key = require 'vkeys'
-local vkeys = require 'vkeys'
-local sampev = require 'lib.samp.events'
-local encoding = require "encoding"
-require 'lib.sampfuncs'
-require 'lib.moonloader'
+local imgui = require 'mimgui'
+local encoding = require 'encoding'
 encoding.default = 'CP1251'
-u8 = encoding.UTF8
 local u8 = encoding.UTF8
+local new = imgui.new
+local effil = require 'effil'
+local ffi = require 'ffi'
+local ev = require 'samp.events'
+local new, str = imgui.new, ffi.string
+local socket_url = require'socket.url' -- Для кодирования URL
+local vkeys = require 'vkeys'
+
+local tab = 1
+local WinState = new.bool()
 
 local msm = ''
 local act = false
@@ -36,15 +40,15 @@ end
 
 local sounds = {
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6786267d&is=6784d4fd&hm=536c9f282a570473e189cbe4e2fa5b2f889afd8738737dc63f6cf72a53c2e004&',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest1.mp3',
         file_name = 'arrest1.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964390141982/arrest2.mp3?ex=6786267d&is=6784d4fd&hm=a4f6e5e842848379d93a7010040c549742f889179fca4d19460878b4b3d19eae&',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest2.mp3',
         file_name = 'arrest2.mp3',
     },
     {
-        url = 'https://cdn.discordapp.com/attachments/1319588899185754172/1319588964780478474/arrest3.mp3?ex=6786267d&is=6784d4fd&hm=536c9f282a570473e189cbe4e2fa5b2f889afd8738737dc63f6cf72a53c2e004&',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest3.mp3',
         file_name = 'arrest3.mp3',
     },
 }
@@ -54,51 +58,74 @@ local sampev = require 'lib.samp.events'
 
 local sound_streams = {}
 
-local imgui = require 'imgui'
-local mm = imgui.ImBool(false)
-local key = require 'vkeys'
-
-local inicfg = require('inicfg');
-local IniFilename = 'settings.ini'
-local ini = inicfg.load({
+local ini = require 'inicfg'
+local settings = ini.load({
     player = {
-        name = 'Иван Иванов',
-        tag = 'Р',
-        rang = 'Рядовой',
-        department = 'ДПС'
-    }
-}, IniFilename);
-inicfg.save(ini, IniFilename);
+        name = '',
+        tag = '',
+        rang = '',
+        department = '',
+    },
+    othersettings = {
+        menu = 'mvd',
+        volume = 20
+    },
+}, 'MVDHelper.ini')
 
-local namebuffer = imgui.ImBuffer(256)
-local tagbuffer = imgui.ImBuffer(256)
-local rangbuffer = imgui.ImBuffer(256)
-local departmentbuffer = imgui.ImBuffer(256)
+local inputname = new.char[256](u8(settings.player.name))
+local inputtag = new.char[256](u8(settings.player.tag))
+local inputrang = new.char[256](u8(settings.player.rang))
+local inputdepartment = new.char[256](u8(settings.player.department))
+local menu = new.char[12](u8(settings.othersettings.menu))
+local volume = imgui.new.int(settings.othersettings.volume)
 
-function imgui.OnDrawFrame()
-    imgui.SetNextWindowSize(imgui.ImVec2(600, 300), imgui.Cond.FirstUseEver)
-    imgui.Begin('MVD-Helper | Settings', main_window_state)
-  if imgui.InputText('Имя Фамилия', namebuffer) then
-    ini.player.name = u8:decode(namebuffer.v)
-    inicfg.save(ini, IniFilename)
-    end
-
-      if imgui.InputText('Тэг', tagbuffer) then
-    ini.player.tag = u8:decode(tagbuffer.v)
-    inicfg.save(ini, IniFilename)
-    end
-
-      if imgui.InputText('Звание', rangbuffer) then
-    ini.player.rang = u8:decode(rangbuffer.v)
-    inicfg.save(ini, IniFilename)
-    end
-
-      if imgui.InputText('Отдел', departmentbuffer) then
-    ini.player.department = u8:decode(departmentbuffer.v)
-    inicfg.save(ini, IniFilename)
-    end
-    imgui.End()
+imgui.OnFrame(function() return WinState[0] end, function(player)
+    imgui.SetNextWindowPos(imgui.ImVec2(500, 500), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
+    imgui.SetNextWindowSize(imgui.ImVec2(516, 228), imgui.Cond.Always)
+    imgui.Begin('MVDHelper | Settings', WinState, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
+    if imgui.BeginChild('Menu', imgui.ImVec2(129, 192), true) then
+    if imgui.Button('Главная') then tab = 1 end
+    if imgui.Button('Настройки') then tab = 2 end
+    imgui.EndChild()
 end
+    imgui.SameLine()
+    if imgui.BeginChild('Function', imgui.ImVec2(360, 192), true) then
+    if tab == 1 then
+	imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Введи свою команду', u8'1', menu, 12) then end
+	if imgui.Button('Сохранить настройки', imgui.ImVec2(137, 30)) then
+    settings.othersettings.menu = u8:decode(str(menu))
+    ini.save(settings, 'MVDHelper.ini')
+    thisScript():reload()
+end
+	imgui.Text('Громкость')
+	imgui.SameLine()
+	if imgui.SliderInt("##volume", volume, 0, 100) then
+	if music ~= nil then setAudioStreamVolume(music, volume.v / 100) end
+	settings.othersettings.volume = volume[0]
+	ini.save(settings, 'MVDHelper.ini')
+end
+	if imgui.Button('Тест звука', imgui.ImVec2(78, 25)) then
+	playRandomSound()
+end
+    elseif tab == 2 then
+    imgui.Text('Настройка для отыгровок')
+    imgui.Separator() -- Разделяющая полоса
+	imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Nick_Name', 'Имя Фамилия/Позывной', inputname, 256) then end
+	imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Тэг', 'С', inputtag, 256) then end
+    imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Звание', 'Сержант', inputrang, 256) then end
+    imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Отдел', 'ДПС/ППС/ОМОН', inputdepartment, 256) then end
+    if imgui.Button('Сохранить настройки', imgui.ImVec2(137, 30)) then
+	settings.player.name = u8:decode(str(inputname))
+	settings.player.tag = u8:decode(str(inputtag))
+    settings.player.rang = u8:decode(str(inputrang))
+	settings.player.department = u8:decode(str(inputdepartment))
+	ini.save(settings, 'MVDHelper.ini')
+	thisScript():reload()
+        end
+    end
+end
+    imgui.End()
+end)
 
 function getTableUsersByUrl(url)
     local n_file, bool, users = os.getenv('TEMP')..os.time(), false, {}
@@ -202,10 +229,7 @@ function main()
     sampRegisterChatCommand('koap19', koap19)
     sampRegisterChatCommand('koap20', koap20)
     sampRegisterChatCommand('koap21', koap21)
-    sampRegisterChatCommand('mvd', function()
-    mm.v = not mm.v
-    imgui.Process =mm.v
-  end)
+    sampRegisterChatCommand(settings.othersettings.menu, function() WinState[0] = not WinState[0] end)
 end
 
     if not doesDirectoryExist(getWorkingDirectory()..'\\sounds') then
@@ -283,7 +307,7 @@ end
 function omondoc(arg)
     if arg:find('(%d+)') then
     lua_thread.create(function()
-    sampSendChat(u8:decode'Работает сотрудник ОМОН | Позывной: '..ini.player.name..'.')
+    sampSendChat(u8:decode'Работает сотрудник ОМОН | Позывной: '..settings.player.name..'.')
     wait(750)
     sampSendChat(u8:decode'Предьявите пожалуйста ваши документы, удостоверяющие вашу личность.')
     wait(750)
@@ -299,7 +323,7 @@ function omondoc(arg)
 function mdoc(arg)
     if arg:find('(%d+)') then
     lua_thread.create(function()
-    sampSendChat(u8:decode'Здравия желаю,вас беспокоит '..ini.player.rang..' '..ini.player.department..' - '..ini.player.name..'.')
+    sampSendChat(u8:decode'Здравия желаю,вас беспокоит '..settings.player.rang..' '..settings.player.department..' - '..settings.player.name..'.')
     wait(900)
     sampSendChat(u8:decode'/me отдал честь')
     wait(900)
