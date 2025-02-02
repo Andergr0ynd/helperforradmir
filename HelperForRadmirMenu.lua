@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v0.999")
+script_version("v1.0")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -16,17 +16,21 @@ encoding.default = 'CP1251'
 u8 = encoding.UTF8
 local u8 = encoding.UTF8
 
-local inicfg = require('inicfg');
-local IniFilename = 'settings.ini'
-local ini = inicfg.load({
+local act = false
+
+local ini = require 'inicfg'
+local settings = ini.load({
     player = {
-        name = 'Иван Иванов',
-        tag = 'Р',
-        rang = 'Рядовой',
-        department = 'ДПС'
-    }
-}, IniFilename);
-inicfg.save(ini, IniFilename);
+        name = '',
+        tag = '',
+        rang = '',
+        department = '',
+    },
+    othersettings = {
+        menu = 'mvd',
+        volume = 20
+    },
+}, 'MVDHelper.ini')
 
 local msm = ''
 local act = false
@@ -99,10 +103,16 @@ function main()
     end
     if isAvailableUser(users, sampGetPlayerNickname(myid)) then
     sampAddChatMessage(tag.. u8:decode'{32CD32}Меню активировано!', -1)
-    end
-    end
+
+    sampRegisterChatCommand("reload", function() -- Создание команды с функцией
+        act = not act -- Задаешь что команда переключает act
+        sampAddChatMessage(tag.. u8:decode"Меню MVD "..(state and u8:decode"Работает" or u8:decode"Перезапущено"), -1) -- Выводишь в чат состояние скрипта
+    end)
     while true do
-    wait(0)
+        wait(0)
+        if act then
+         thisScript():reload()
+         elseif not act then
 
     if isKeyDown(VK_F3) then 
     sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Представиться (Омон) \n 2 [MVD] Представиться \n 3 [MVD] Взял документы \n 4 [MVD] Надеть наручники \n 5 [MVD] Повести за собой \n 6 [MVD] Посадить преступника в авто \n 7 [MVD] Снять наручники \n 8 [MVD] Не вести за собой \n 9  [MVD] Высадить игрока из авто \n 10 [MVD] Посадить преступника в КПЗ \n 11 [MVD] Объявить преступника в розыск \n 12 [MVD] Выписать штраф \n 13 [MVD] Изъять права у нарушителя \n 14 [MVD] Изъять лицензию на оружие у нарушителя \n 15 [MVD] Вытащить из авто силой \n 16 [MVD] Мегафон \n 17 [MVD] Начать погоню \n 18 [MVD] Провести обыск \n 19 [MVD] Миранда \n 20 [MVD] Пробить по базе \n 21 [MVD] Эвакуатор", u8:decode("Закрыть"), nil, 2)
@@ -120,7 +130,7 @@ function main()
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
     if input ~= nil then
-    sampSendChat(u8:decode'Работает сотрудник ОМОН | Позывной: '..ini.player.name..'.')
+    sampSendChat(u8:decode'Работает сотрудник ОМОН | Позывной: '..settings.player.name..'.')
     wait(750)
     sampSendChat(u8:decode'Предьявите пожалуйста ваши документы, удостоверяющие вашу личность.')
     wait(750)
@@ -138,7 +148,7 @@ function main()
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
     if input ~= nil then
-    sampSendChat(u8:decode'Здравия желаю, Вас беспокоит '..ini.player.rang..' "'..ini.player.department..'" - '..ini.player.name..'.')
+    sampSendChat(u8:decode'Здравия желаю, Вас беспокоит '..settings.player.rang..' "'..settings.player.department..'" - '..settings.player.name..'.')
     wait(750)
     sampSendChat(u8:decode'/me отдал честь')
     wait(750)
@@ -551,6 +561,9 @@ function main()
     wait(1000)
     sampSendChat('/c 060')
     end
+        end
+    end
+end
         end
     end
 end
