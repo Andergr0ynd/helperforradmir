@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v0.999")
+script_version("v1.1")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -84,7 +84,7 @@ imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowSize(imgui.ImVec2(516, 228), imgui.Cond.Always)
     imgui.Begin('MVDHelper | Settings', WinState, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
     if imgui.BeginChild('Menu', imgui.ImVec2(129, 192), true) then
-    if imgui.Button('Главная') then tab = 1 end
+    if imgui.Button('Главная ') then tab = 1 end
     if imgui.Button('Настройки') then tab = 2 end
     imgui.EndChild()
 end
