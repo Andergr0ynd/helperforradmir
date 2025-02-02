@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v1.1")
+script_version("v1.0")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -10,7 +10,6 @@ local encoding = require 'encoding'
 encoding.default = 'CP1251'
 local u8 = encoding.UTF8
 local new = imgui.new
-local effil = require 'effil'
 local ffi = require 'ffi'
 local ev = require 'samp.events'
 local new, str = imgui.new, ffi.string
@@ -84,7 +83,7 @@ imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowSize(imgui.ImVec2(516, 228), imgui.Cond.Always)
     imgui.Begin('MVDHelper | Settings', WinState, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
     if imgui.BeginChild('Menu', imgui.ImVec2(129, 192), true) then
-    if imgui.Button('Главная ') then tab = 1 end
+    if imgui.Button('Главная') then tab = 1 end
     if imgui.Button('Настройки') then tab = 2 end
     imgui.EndChild()
 end
