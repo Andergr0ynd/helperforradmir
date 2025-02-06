@@ -75,7 +75,6 @@ local settings = ini.load({
     },
     othersettings = {
         menu = 'mvd',
-        volume = 20
     },
 }, 'MVDHelper.ini')
 
@@ -84,7 +83,6 @@ local inputtag = new.char[256](u8(settings.player.tag))
 local inputrang = new.char[256](u8(settings.player.rang))
 local inputdepartment = new.char[256](u8(settings.player.department))
 local menu = new.char[12](u8(settings.othersettings.menu))
-local volume = imgui.new.int(settings.othersettings.volume)
 
 imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowPos(imgui.ImVec2(500, 500), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
@@ -104,14 +102,7 @@ end
     ini.save(settings, 'MVDHelper.ini')
     thisScript():reload()
 end
-	imgui.Text('Громкость')
-	imgui.SameLine()
-	if imgui.SliderInt("##volume", volume, 0, 100) then
-	if music ~= nil then setAudioStreamVolume(music, volume.v / 100) end
-	settings.othersettings.volume = volume[0]
-	ini.save(settings, 'MVDHelper.ini')
-end
-	if imgui.Button('Тест звука', imgui.ImVec2(78, 25)) then
+	if imgui.Button('Проверка звука', imgui.ImVec2(137, 30)) then
 	playRandomSound()
 end
     elseif tab == 2 then
@@ -127,7 +118,12 @@ end
     settings.player.rang = u8:decode(str(inputrang))
 	settings.player.department = u8:decode(str(inputdepartment))
 	ini.save(settings, 'MVDHelper.ini')
+    for _,vv in pairs(script.list()) do
+    if vv.filename:find('HelperForRadmirMenu.lua') then
+    vv:reload()
 	thisScript():reload()
+                end
+            end
         end
     end
 end
