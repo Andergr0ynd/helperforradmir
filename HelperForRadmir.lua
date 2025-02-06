@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v1.0")
+script_version("v1.1")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -49,6 +49,14 @@ local sounds = {
     {
         url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest3.mp3',
         file_name = 'arrest3.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest4.mp3',
+        file_name = 'arrest4.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest5.mp3',
+        file_name = 'arrest5.mp3',
     },
 }
 
