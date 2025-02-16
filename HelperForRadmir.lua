@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v1.1")
+script_version("v2.0")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -75,6 +75,8 @@ local settings = ini.load({
     },
     othersettings = {
         menu = 'mvd',
+        music = false,
+        volume = 10,
     },
 }, 'MVDHelper.ini')
 
@@ -83,6 +85,8 @@ local inputtag = new.char[256](u8(settings.player.tag))
 local inputrang = new.char[256](u8(settings.player.rang))
 local inputdepartment = new.char[256](u8(settings.player.department))
 local menu = new.char[12](u8(settings.othersettings.menu))
+local musicsettings = new.bool(settings.othersettings.music)
+local volume = imgui.new.int(settings.othersettings.volume)
 
 imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowPos(imgui.ImVec2(500, 500), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
@@ -97,13 +101,23 @@ end
     if imgui.BeginChild('Function', imgui.ImVec2(360, 192), true) then
     if tab == 1 then
 	imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Введи свою команду', u8'1', menu, 12) then end
-	if imgui.Button('Сохранить настройки', imgui.ImVec2(137, 30)) then
+	if imgui.Button('Сохранить команду', imgui.ImVec2(137, 30)) then
     settings.othersettings.menu = u8:decode(str(menu))
     ini.save(settings, 'MVDHelper.ini')
     thisScript():reload()
 end
+	imgui.Text('Громкость')
+	if imgui.SliderInt("##volume", volume, 0, 100) then
+	if music ~= nil then setAudioStreamVolume(music, volume.v / 100) end
+	settings.othersettings.volume = volume[0]
+	ini.save(settings, 'MVDHelper.ini')
+end
 	if imgui.Button('Проверка звука', imgui.ImVec2(137, 30)) then
 	playRandomSound()
+end
+    if imgui.Checkbox('Включить звук', musicsettings) then
+    settings.othersettings.music = musicsettings[0]
+    ini.save(settings, 'MVDHelper.ini')
 end
     elseif tab == 2 then
     imgui.Text('Настройка для отыгровок')
@@ -272,7 +286,7 @@ function playRandomSound()
 end
 
 function sampev.onServerMessage(color, text)
-    if text:find(u8:decode'передаёт преступника') then
+    if text:find(u8:decode'(%w+_%w+) был доставлен в тюрьму для отбывания наказания') then
         playRandomSound()
     end
 end
