@@ -1,5 +1,5 @@
 script_name("HelperForRadmirMenu")
-script_version("v1.1")
+script_version("v2.0")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -28,13 +28,13 @@ local settings = ini.load({
     },
     othersettings = {
         menu = 'mvd',
-        volume = 20
+        music = false,
+        volume = 10,
     },
 }, 'MVDHelper.ini')
 
 local msm = ''
 local act = false
-
 
 local enable_autoupdate = true
 local autoupdate_loaded = false
@@ -102,20 +102,13 @@ function main()
     thisScript():unload()
     end
     if isAvailableUser(users, sampGetPlayerNickname(myid)) then
-    sampAddChatMessage(tag.. u8:decode'{32CD32}Меню активировано!', -1)
+    sampAddChatMessage(tag.. u8:decode'{32CD32}Меню активировано! Открыть меню на {FF0000}F3', -1)
 
-    sampRegisterChatCommand("reload", function() -- Создание команды с функцией
-        act = not act -- Задаешь что команда переключает act
-        sampAddChatMessage(tag.. u8:decode"Меню MVD "..(state and u8:decode"Работает" or u8:decode"Перезапущено"), -1) -- Выводишь в чат состояние скрипта
-    end)
     while true do
         wait(0)
-        if act then
-         thisScript():reload()
-         elseif not act then
 
     if isKeyDown(VK_F3) then 
-    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Представиться (Омон) \n 2 [MVD] Представиться \n 3 [MVD] Взял документы \n 4 [MVD] Надеть наручники \n 5 [MVD] Повести за собой \n 6 [MVD] Посадить преступника в авто \n 7 [MVD] Снять наручники \n 8 [MVD] Не вести за собой \n 9  [MVD] Высадить игрока из авто \n 10 [MVD] Посадить преступника в КПЗ \n 11 [MVD] Объявить преступника в розыск \n 12 [MVD] Выписать штраф \n 13 [MVD] Изъять права у нарушителя \n 14 [MVD] Изъять лицензию на оружие у нарушителя \n 15 [MVD] Вытащить из авто силой \n 16 [MVD] Мегафон \n 17 [MVD] Начать погоню \n 18 [MVD] Провести обыск \n 19 [MVD] Миранда \n 20 [MVD] Пробить по базе \n 21 [MVD] Эвакуатор", u8:decode("Закрыть"), nil, 2)
+    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Представиться (Омон) \n 2 [MVD] Представиться \n 3 [MVD] Взял документы \n 4 [MVD] Надеть наручники \n 5 [MVD] Повести за собой \n 6 [MVD] Посадить преступника в авто \n 7 [MVD] Снять наручники \n 8 [MVD] Не вести за собой \n 9  [MVD] Высадить игрока из авто \n 10 [MVD] Посадить преступника в КПЗ \n 11 [MVD] Объявить преступника в розыск \n 12 [MVD] Выписать штраф \n 13 [MVD] Изъять права у нарушителя \n 14 [MVD] Изъять лицензию на оружие у нарушителя \n 15 [MVD] Вытащить из авто силой \n 16 [MVD] Мегафон \n 17 [MVD] Начать погоню \n 18 [MVD] Провести обыск \n 19 [MVD] Миранда \n 20 [MVD] Пробить по базе \n 21 [MVD] Эвакуатор \n \n", u8:decode("Закрыть"), nil, 2)
     while sampIsDialogActive(6405) do wait(100) end
     local _, button, list, _ = sampHasDialogRespond(6405)
 
@@ -560,10 +553,12 @@ function main()
     sampSendChat('/attach')
     wait(1000)
     sampSendChat('/c 060')
-    end
-        end
-    end
-end
+                    end
+                end
+            end
+    if list == 22 then
+    sampAddChatMessage(tag .. u8:decode'Меню закрыто', -1)
+    end  
         end
     end
 end
