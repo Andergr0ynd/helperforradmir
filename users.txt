@@ -7,3 +7,4 @@ Tera_Kerun: 31.12.2030
 Boris_Guevara: 31.12.2030
 Kasim_Hennessy: 31.12.2030
 Update_Underground: 31.12.2030
+Adolf_Daisuki: 31.12.2030
