@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.1")
+script_version("v2.11")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -313,7 +313,7 @@ end
                
                 lua_thread.create(function ()
                     while act do
-                        wait(5000)
+                        wait(2000)
                         sampSendChat('/setmark '..msm)
                     end
                 end)
