@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.0")
+script_version("v2.1")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -76,7 +76,7 @@ local settings = ini.load({
     othersettings = {
         menu = 'mvd',
         music = false,
-        volume = 10,
+        volume = 1,
     },
 }, 'MVDHelper.ini')
 
@@ -107,8 +107,8 @@ end
     thisScript():reload()
 end
 	imgui.Text('Громкость')
-	if imgui.SliderInt("##volume", volume, 0, 100) then
-	if music ~= nil then setAudioStreamVolume(music, volume.v / 100) end
+	if imgui.SliderInt("##volume", volume, 0, 10) then
+	if music ~= nil then setAudioStreamVolume(music, volume.v / 10) end
 	settings.othersettings.volume = volume[0]
 	ini.save(settings, 'MVDHelper.ini')
 end
@@ -279,15 +279,17 @@ function playRandomSound()
         local random_index = math.random(1, #sound_streams)
         local stream = sound_streams[random_index]
         setAudioStreamState(stream, as_action.PLAY)
-        setAudioStreamVolume(stream, 70)
+        setAudioStreamVolume(stream, settings.othersettings.volume)
     else
         sampAddChatMessage(u8:decode'Нет доступных звуков для воспроизведения.', -1)
     end
 end
 
 function sampev.onServerMessage(color, text)
+    if settings.othersettings.music then
     if text:find(u8:decode'(%w+_%w+) был доставлен в тюрьму для отбывания наказания') then
         playRandomSound()
+        end
     end
 end
 
