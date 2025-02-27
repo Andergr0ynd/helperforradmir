@@ -16,8 +16,8 @@ local new, str = imgui.new, ffi.string
 local socket_url = require'socket.url' -- Для кодирования URL
 local vkeys = require 'vkeys'
 
-local script_version = "2.11"
-local update_time = "18.02.2025 18:00"
+local script_version = "2.5"
+local update_time = "27.02.2025 11:00"
 
 local tab = 1
 local WinState = new.bool()
