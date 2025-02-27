@@ -321,7 +321,9 @@ end
     if isAvailableUser(users, sampGetPlayerNickname(myid)) then
     sampAddChatMessage(tag.. u8:decode'{32CD32}AHK успешно активирован! Можете им пользоваться!', -1)
     print(u8:decode'AHK успешно активирован! Можете им пользоваться!')
-
+    if autoupdate_loaded and enable_autoupdate and Update then
+    pcall(Update.check, Update.json_url, Update.prefix, Update.url)
+    end
     sampAddChatMessage(tag .. u8:decode'Все файлы успешно загружены и готовы к игре..', -1)
     sampAddChatMessage(tag .. u8:decode'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
 
