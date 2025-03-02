@@ -1,4 +1,5 @@
 {
   "latest": "v2.5",
-  "updateurl": "https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/HelperForRadmir.lua"
+  "updateurl": "https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/HelperForRadmir.lua",
+   "news" : "Были добавлены оповещения об обновлениях."
 }
