@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.5")
+script_version("v2.501")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -15,15 +15,18 @@ local ev = require 'samp.events'
 local new, str = imgui.new, ffi.string
 local socket_url = require'socket.url' -- Для кодирования URL
 local vkeys = require 'vkeys'
+local hotkey = require 'mimgui_hotkeys'
 
-local script_version = "2.5"
-local update_time = "27.02.2025 11:00"
+local script_version = "2.501"
+local update_time = "12.03.2025 17:30"
 
 local tab = 1
 local WinState = new.bool()
 
 local msm = ''
 local act = false
+local needStop = false
+local needOpen = true
 
 local enable_autoupdate = true
 local autoupdate_loaded = false
@@ -61,6 +64,94 @@ local sounds = {
         url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest5.mp3',
         file_name = 'arrest5.mp3',
     },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap01.txt',
+        file_name = 'koap01.txt',
+    },
+        {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap02.txt',
+        file_name = 'koap02.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap03.txt',
+        file_name = 'koap03.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap04.txt',
+        file_name = 'koap04.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap05.txt',
+        file_name = 'koap05.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap06.txt',
+        file_name = 'koap06.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap07.txt',
+        file_name = 'koap07.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap07_2.txt',
+        file_name = 'koap07_2.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap08.txt',
+        file_name = 'koap08.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap09.txt',
+        file_name = 'koap09.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap10.txt',
+        file_name = 'koap10.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap11.txt',
+        file_name = 'koap11.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap12.txt',
+        file_name = 'koap12.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap13.txt',
+        file_name = 'koap13.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap14.txt',
+        file_name = 'koap14.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap15.txt',
+        file_name = 'koap15.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap16.txt',
+        file_name = 'koap16.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap17.txt',
+        file_name = 'koap17.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap18.txt',
+        file_name = 'koap18.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap19.txt',
+        file_name = 'koap19.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap20.txt',
+        file_name = 'koap20.txt',
+    },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap21.txt',
+        file_name = 'koap21.txt',
+    },
 }
 
 local as_action = require('moonloader').audiostream_state
@@ -81,6 +172,7 @@ local settings = ini.load({
         music = false,
         volume = 1,
         slider = 1.5,
+        not_slider = 5.5,
     },
     dop = {
         castom_mhelp = 'mhelp',
@@ -107,8 +199,17 @@ local settings = ini.load({
         castom_mattach = 'mattach',
         castom_miranda = 'miranda',
         castom_photo = 'photo',
+        castom_mcheckdocs = 'mcheckdocs',
+    },
+    hotkey_cfg = {
+        bind = '[]',
+        bind2 = '[]',
     },
 }, 'MVDHelper.ini')
+
+local sw, sh = getScreenResolution()
+local mainWindow = imgui.new.bool(true)
+local HotkeyCFGMsm
 
 local inputname = new.char[256](u8(settings.player.name))
 local inputtag = new.char[256](u8(settings.player.tag))
@@ -118,6 +219,7 @@ local menu = new.char[12](u8(settings.othersettings.menu))
 local musicsettings = new.bool(settings.othersettings.music)
 local volume = imgui.new.int(settings.othersettings.volume)
 local slider = imgui.new.int(settings.othersettings.slider)
+local not_slider = imgui.new.int(settings.othersettings.not_slider)
 
 local castommhelp = new.char[12](u8(settings.dop.castom_mhelp))
 local castommsm = new.char[12](u8(settings.dop.castom_msm))
@@ -143,6 +245,7 @@ local castommbreak_door = new.char[12](u8(settings.dop.castom_mbreak_door))
 local castommattach = new.char[12](u8(settings.dop.castom_mattach))
 local castommiranda = new.char[12](u8(settings.dop.castom_miranda))
 local castomphoto = new.char[12](u8(settings.dop.castom_photo))
+local castommcheckdocs = new.char[12](u8(settings.dop.castom_mcheckdocs))
 
 imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowPos(imgui.ImVec2(500, 500), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
@@ -164,6 +267,7 @@ end
     ini.save(settings, 'MVDHelper.ini')
     thisScript():reload()
 end
+    imgui.Separator()
 	imgui.Text('Громкость')
 	if imgui.SliderInt("##volume", volume, 0, 10) then
 	if music ~= nil then setAudioStreamVolume(music, volume.v / 10) end
@@ -177,10 +281,22 @@ end
     settings.othersettings.music = musicsettings[0]
     ini.save(settings, 'MVDHelper.ini')
 end
+    imgui.Separator()
 	imgui.Text('Интервал для setmark | msm')
 	if imgui.SliderInt('', slider, 1, 5) then 
 	settings.othersettings.slider = slider[0]
 	ini.save(settings, 'MVDHelper.ini')
+end
+	imgui.Text('Интервал уведомлений')
+	if imgui.SliderInt(' ', not_slider, 5, 10) then 
+	settings.othersettings.not_slider = not_slider[0]
+	ini.save(settings, 'MVDHelper.ini')
+end
+    imgui.Separator()
+    imgui.Text('Остановка /msm')
+    if HotkeyCFGMsm:ShowHotKey() then -- создаем условие, которое будет срабатывать при обновлении бинда пользователем
+    settings.hotkey_cfg.bind = encodeJson(HotkeyCFGMsm:GetHotKey()) -- заносим в конфиг изменённую пользователем комбинацию клавиш
+    ini.save(settings, 'MVDHelper.ini') -- не забываем конфиг сохранить
 end
     elseif tab == 2 then
     imgui.Text('Настройка для отыгровок')
@@ -195,13 +311,8 @@ end
     settings.player.rang = u8:decode(str(inputrang))
 	settings.player.department = u8:decode(str(inputdepartment))
 	ini.save(settings, 'MVDHelper.ini')
-    for _,vv in pairs(script.list()) do
-    if vv.filename:find('HelperForRadmirMenu.lua') then
-    vv:reload()
-	thisScript():reload()
-                end
-            end
-        end
+    thisScript():reload()
+end
     elseif tab == 3 then
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /mhelp', 'Команду', castommhelp, 12) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /msm', 'Команду', castommsm, 12) then end
@@ -227,6 +338,7 @@ end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /mattach', 'Команду', castommattach, 12) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /miranda', 'Команду', castommiranda, 12) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /photo', 'Команду', castomphoto, 12) then end
+    imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /mcheckdocs', 'Команду', castommcheckdocs, 12) then end
     if imgui.Button('Сохранить настройки', imgui.ImVec2(137, 30)) then
     settings.dop.castom_mhelp = u8:decode(str(castommhelp))
     settings.dop.castom_msm = u8:decode(str(castommsm))
@@ -252,6 +364,7 @@ end
     settings.dop.castom_mattach = u8:decode(str(castommattach))
     settings.dop.castom_miranda = u8:decode(str(castommiranda))
     settings.dop.castom_photo = u8:decode(str(castomphoto))
+    settings.dop.castom_mcheckdocs = u8:decode(str(castommcheckdocs))
     ini.save(settings, 'MVDHelper.ini')
     thisScript():reload()
 end
@@ -326,6 +439,7 @@ end
     end
     sampAddChatMessage(tag .. u8:decode'Все файлы успешно загружены и готовы к игре..', -1)
     sampAddChatMessage(tag .. u8:decode'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
+    sampAddChatMessage(tag .. u8:decode'Используйте /mhelp или меню на F3', -1)
 
     sampRegisterChatCommand(settings.dop.castom_mhelp, mhelp) 
     sampRegisterChatCommand(settings.dop.castom_msm, msm) 
@@ -351,6 +465,7 @@ end
     sampRegisterChatCommand(settings.dop.castom_mattach, mattach)
     sampRegisterChatCommand(settings.dop.castom_miranda, miranda)
     sampRegisterChatCommand(settings.dop.castom_photo, photo)
+    sampRegisterChatCommand(settings.dop.castom_mcheckdocs, mcheckdocs)
     sampRegisterChatCommand('koap1', koap1)
     sampRegisterChatCommand('koap2', koap2)
     sampRegisterChatCommand('koap3', koap3)
@@ -374,6 +489,23 @@ end
     sampRegisterChatCommand('koap20', koap20)
     sampRegisterChatCommand('koap21', koap21)
     sampRegisterChatCommand(settings.othersettings.menu, function() WinState[0] = not WinState[0] end)
+    lua_thread.create(function()
+    HotkeyCFGMsm = hotkey.RegisterHotKey('Hotkey CFG MSM', false, decodeJson(settings.hotkey_cfg.bind), function()
+        needStop = true -- Устанавливаем флаг при нажатии клавиши
+    end)
+    while true do
+        wait(0)
+        if needStop then
+            needStop = false -- Сбрасываем флаг
+            if act then
+                act = false
+                sampAddChatMessage(tag.. u8:decode'{006AFF}MVD Helper: {FFFFFF}Слежка остановлена!', -1)
+            end
+            wait(500) -- Можно использовать wait здесь, так как это в основном потоке
+        end
+    end
+end)
+
 end
     if not doesDirectoryExist(getWorkingDirectory()..'\\sounds') then
     createDirectory(getWorkingDirectory()..'\\sounds')
@@ -389,12 +521,11 @@ end
     end
 end
 while true do
-        wait(0)
-        if isKeyDown(VK_F3) then 
-    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Оследить преступника \n 2 [MVD] Представиться (Омон) \n 3 [MVD] Представиться \n 4 [MVD] Взял документы \n 5 [MVD] Надеть наручники \n 6 [MVD] Повести за собой \n 7 [MVD] Посадить преступника в авто \n 8 [MVD] Снять наручники \n 9 [MVD] Не вести за собой \n 10  [MVD] Высадить игрока из авто \n 11 [MVD] Посадить преступника в КПЗ \n 12 [MVD] Объявить преступника в розыск \n 13 [MVD] Выписать штраф \n 14 [MVD] Изъять права у нарушителя \n 15 [MVD] Изъять лицензию на оружие у нарушителя \n 16 [MVD] Вытащить из авто силой \n 17 [MVD] Мегафон \n 18 [MVD] Начать погоню \n 19 [MVD] Провести обыск \n 20 [MVD] Миранда \n 21 [MVD] Пробить по базе \n 22 [MVD] Эвакуатор \n \n", u8:decode("Закрыть"), nil, 2)
+    wait(0)
+    if isKeyDown(VK_F3) then 
+    sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Оследить преступника \n 2 [MVD] Представиться (Омон) \n 3 [MVD] Представиться \n 4 [MVD] Взял документы \n 5 [MVD] Взяь документы (В случае если отказывается) \n 6 [MVD] Надеть наручники \n 7 [MVD] Повести за собой \n 8 [MVD] Посадить преступника в авто \n 9 [MVD] Снять наручники \n 10 [MVD] Не вести за собой \n 11 [MVD] Высадить игрока из авто \n 12 [MVD] Посадить преступника в КПЗ \n 13 [MVD] Объявить преступника в розыск \n 14 [MVD] Выписать штраф \n 15 [MVD] Изъять права у нарушителя \n 16 [MVD] Изъять лицензию на оружие у нарушителя \n 17 [MVD] Вытащить из авто силой \n 18 [MVD] Мегафон \n 19 [MVD] Начать погоню \n 20 [MVD] Провести обыск \n 21 [MVD] Миранда \n 22 [MVD] Пробить по базе \n 23 [MVD] Эвакуатор \n \n", u8:decode("Закрыть"), nil, 2)
     while sampIsDialogActive(6405) do wait(100) end
     local _, button, list, _ = sampHasDialogRespond(6405)
-
 
     if list == 0 then
     sampAddChatMessage(tag .. u8:decode'Меню закрыто', -1)
@@ -408,21 +539,25 @@ while true do
     if input ~= nil then
     msm = input
     if act then
-        act = false
-        sampAddChatMessage(tag.. u8:decode'{006AFF}MVD Helper: {FFFFFF}Слежка окончена ID:'..input, -1)
+    act = false
+    sampAddChatMessage(tag.. u8:decode'{006AFF}MVD Helper: {FFFFFF}Слежка окончена ID:'..input, -1) else
+    if msm:match('%d+') then
+    act = true
+    sampAddChatMessage(tag.. u8:decode"{006AFF}MVD Helper: {FFFFFF}Начал отслеживать ID:" ..input, -1)
+    lua_thread.create(function ()
+    while act do
+    wait(slider[0] * 1000)
+    sampSendChat('/setmark '..input)
+    end
+end)
+    lua_thread.create(function ()
+    while act do
+    wait(not_slider[0] * 1000)
+    sampAddChatMessage(tag.. u8:decode'{006AFF}MVD Helper: {FFFFFF}Слежка идёт за: '..input, -1)
+    end
+end)
     else
-            if msm:match('%d+') then
-                act = true
-        sampAddChatMessage(tag.. u8:decode"{006AFF}MVD Helper: {FFFFFF}Начал отслеживать ID:" ..input, -1)
-               
-                lua_thread.create(function ()
-                    while act do
-                        wait(slider[0] * 1000)
-                        sampSendChat('/setmark '..input)
-                    end
-                end)
-            else
-        sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
+    sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
                 end
             end
         end
@@ -493,6 +628,33 @@ end
     local result, button, list, input = sampHasDialogRespond(100)
     if result then
     if input ~= nil then
+    sampSendChat(u8:decode'/me протянул руку затем провел по карманам легким движением руки')
+    wait(700)
+    sampSendChat(u8:decode'/do Проводит по карманам...')
+    wait(700)
+    sampSendChat(u8:decode'/me засунул руку в карман затем достал документы')
+    wait(700)
+    sampSendChat(u8:decode'/do Документы достаны.')
+    wait(700)
+    sampSendChat(u8:decode'/me взял открыл документ')
+    wait(700)
+    sampSendChat(u8:decode'/todo Изучает документ * Ну что ничего иного я и не ожидал наш клиент.')
+    wait(700)
+    sampSendChat(u8:decode'/me закрыл документ затем положил его обратно в карман')
+    wait(700)
+    sampSendChat(u8:decode'/do Документ в кармане. ')
+    wait(700)
+    sampSendChat('/checkdocs ' ..input)
+           end
+       end
+    end
+
+    if list == 6 then
+    sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
+    while sampIsDialogActive(100) do wait(0) end
+    local result, button, list, input = sampHasDialogRespond(100)
+    if result then
+    if input ~= nil then
     sampSendChat(u8:decode'/do Наручники в руке.')
     wait(700)
     sampSendChat(u8:decode'/me надел наручники на человека напротив')
@@ -502,7 +664,7 @@ end
        end
     end
 
-    if list == 6 then
+    if list == 7 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -517,7 +679,7 @@ end
        end
     end
 
-    if list == 7 then
+    if list == 8 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -534,7 +696,7 @@ end
        end
     end
 
-    if list == 8 then
+    if list == 9 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -551,7 +713,7 @@ end
        end
     end
 
-    if list == 9 then
+    if list == 10 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -566,7 +728,7 @@ end
        end
     end
 
-    if list == 10 then
+    if list == 11 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -581,7 +743,7 @@ end
        end
     end
 
-    if list == 11 then
+    if list == 12 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -600,7 +762,7 @@ end
        end
     end
 
-    if list == 12 then
+    if list == 13 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -619,7 +781,7 @@ end
        end
     end
 
-    if list == 13 then
+    if list == 14 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID, Сумму, Причину", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -644,7 +806,7 @@ end
        end
     end
 
-    if list == 14 then
+    if list == 15 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID, Причину", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -669,7 +831,7 @@ end
        end
     end
 
-    if list == 15 then
+    if list == 16 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -694,7 +856,7 @@ end
        end
     end
 
-    if list == 16 then
+    if list == 17 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -713,7 +875,7 @@ end
                 end
             end
    
-    if list == 17 then
+    if list == 18 then
     sampSendChat(u8:decode'/me взял с плеча рацию в руки')
     wait(700)
     sampSendChat(u8:decode'/me зажал кнопку разговора на рации')
@@ -724,7 +886,7 @@ end
     end
 
 
-    if list == 18 then
+    if list == 19 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -741,7 +903,7 @@ end
                 end
             end
 
-    if list == 19 then
+    if list == 20 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -768,7 +930,7 @@ end
                 end
             end
 
-    if list == 20 then
+    if list == 21 then
     sampSendChat(u8:decode'Гражданин, Вы будете задержаны до выяснения обстоятельств.')
     wait(900)
     sampSendChat(u8:decode'Если вы не согласны с задержанием, то Вы можете обратиться в суд.')
@@ -782,7 +944,7 @@ end
     sampSendChat(u8:decode'Так как все Ваши слова будут использованы против Вас.')
     end
 
-    if list == 21 then
+    if list == 22 then
     sampShowDialog(100, u8:decode"MVD Helper", u8:decode"Введите ID", u8:decode"Готово", nil, 1)
     while sampIsDialogActive(100) do wait(0) end
     local result, button, list, input = sampHasDialogRespond(100)
@@ -811,7 +973,7 @@ end
                 end
             end
 
-    if list == 22 then
+    if list == 23 then
     sampSendChat(u8:decode'/do Бортовой компьютер Дорожно-Патрульной Службы выключен.')
     wait(1500)
     sampSendChat(u8:decode'/me включил бортовой компьютер Дорожно-Патрульной Службы')
@@ -856,9 +1018,6 @@ end
             end
     while not isSampAvailable() do
     wait(100)
-end
-    if autoupdate_loaded and enable_autoupdate and Update then
-    pcall(Update.check, Update.json_url, Update.prefix, Update.url)
     end
 end
 
@@ -903,6 +1062,12 @@ end
                     while act do
                         wait(slider[0] * 1000)
                         sampSendChat('/setmark '..msm)
+                    end
+                end)
+                lua_thread.create(function ()
+                    while act do
+                        wait(not_slider[0] * 1000)
+                        sampAddChatMessage(tag.. u8:decode'{006AFF}MVD Helper: {FFFFFF}Слежка идёт за: '..msm, -1)
                     end
                 end)
             else
@@ -1328,158 +1493,250 @@ function photo(arg)
         end
     end
 
+function mcheckdocs(arg)
+    if arg:find('(%d+)') then
+    lua_thread.create(function()
+    sampSendChat(u8:decode'/me протянул руку затем провел по карманам легким движением руки')
+    wait(900)
+    sampSendChat(u8:decode'/do Проводит по карманам...')
+    wait(900)
+    sampSendChat(u8:decode'/me засунул руку в карман затем достал документы')
+    wait(900)
+    sampSendChat(u8:decode'/do Документы достаны.')
+    wait(900)
+    sampSendChat(u8:decode'/me взял открыл документ')
+    wait(900)
+    sampSendChat(u8:decode'/todo Изучает документ * Ну что ничего иного я и не ожидал наш клиент.')
+    wait(900)
+    sampSendChat(u8:decode'/me закрыл документ затем положил его обратно в карман')
+    wait(900)
+    sampSendChat(u8:decode'/do Документ в кармане.')
+    wait(900)
+    sampSendChat("/checkdocs "..arg)
+        end)
+            else
+            sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
+        end
+    end
+
 function koap1()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 01', u8:decode' \n  \n{FFFFFF} 1.1. Управление транспортным средством без государственного регистрационного знака {B4452D} [Штраф: 5.000]\n{fbec5d}Пробег которого составляет более 150 км.\n{FFFFFF} 1.2. Отсутствие у водителя транспортного средства документов на право вождения им. {B4452D} [Штраф: 10.000]\n{FFFFFF} 1.3. Отказ предоставить сотруднику МВД водительское удостоверение. {B4452D} [Штраф: 15.000]\n{FFFFFF} 3.1. Выезд на полосу встречного движения {B4452D} [Штраф: 10.000]\n{fbec5d}Равно пересечение сплошной или двойной сплошной линии разметки.\n{FFFFFF} 3.2. Движение по полосе, предназначенной для встречного движения. {B4452D} [Штраф: 15.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 3.3. Совершение административного правонарушения {B4452D} [Штраф: 25.000, компенсация нанесенного ущерба, лишение водительского удостоверения.]\n{fbec5d}Предусмотренного частью 1 и 2 настоящей статьи, последствия которого привели к ДТП.\n{FFFFFF} 3.4. Несоблюдение требований, предписанных дорожными знаками или разметкой. {B4452D} [Штраф: 15.000]\n{FFFFFF} 4.1. Управление транспортным средством, с неисправными фарами. {B4452D} [Штраф: 3.000]\n{FFFFFF} 4.2. Управление транспортным средством, с неисправным двигателем без аварийной сигнализации. {B4452D} [Штраф: 5.500]\n{FFFFFF} 4.3. Управление транспортным средством, с неисправными колёсами. {B4452D} [Штраф: 6.000]\n{FFFFFF} 5.1. Проезд на красный сигнал светофора. {B4452D} [Штраф: 5.000]\n{FFFFFF} 6.1. Парковка транспортного средства в неположенном месте. {B4452D} [Штраф: 7.000; эвакуация транспортного средства на штрафстоянку.]\n{FFFFFF} 6.2. Парковка транспортного средства в неположенном месте, повлекшая создание аварийной ситуации или препятствий для движения транспортных средств. \n{B4452D} [Штраф: 15.000; эвакуация транспортного средства на штрафстоянку.]\n{FFFFFF} 7.1. Движение по пешеходным дорожкам, тротуарам, газонам. {B4452D} [Штраф: 7.000]\n{FFFFFF} 7.3. Агрессивное вождение, дрифт или другие проявления опасного поведения на проезжей части. {B4452D} [Штраф: 15.000, лишение водительского удостоверения.]\n{FFFFFF} 7.5. Езда на мото-транспорте без защитного шлема. {B4452D} [Штраф: 3.000]\n{FFFFFF} 7.6. Езда на транспортном средстве с выключенным ближним светом в любое время суток. {B4452D} [Штраф: 2.500]\n{FFFFFF} 7.8. Езда на транспортном средстве с установленной плёнкой на окнах, светопропускаемость которых ниже 70%. {B4452D} [Штраф: 10.000]\n{FFFFFF} 8.2. Невыполнение законного требования сотрудника полиции об остановке транспортного средства. {B4452D} [Штраф: 25.000, лишение водительского удостоверения.]\n{FFFFFF} 10.1. Оскорбление гражданского лица. {B4452D} [Штраф: 10.000]\n{FFFFFF} 10.2. Использование нецензурной лексики в общественных местах. {B4452D} [Штраф: 5.000]\n{FFFFFF} 10.3. Хулиганство. {B4452D} [Штраф: 20.000, ст. 10 УК.]\n{FFFFFF} 10.4. Отсутствие у гражданина документов, удостоверяющих личность. {B4452D} [Штраф: 10.000]\n{FFFFFF} 11.1. Оскорбление сотрудника правоохранительных органов при исполнении. {B4452D} [Штраф: 15.000, ст. 21 УК.]\n{FFFFFF} 11.3. Неповиновение законному требования сотрудника правоохранительных органов. {B4452D} [Штраф:  20.000, ст. 23 УК.]\n', u8:decode'Закрыть')
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap01.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 01', u8:decode(contents), u8:decode'Закрыть', nil)
     end) -- Тут наш поток умирает :(
 end
 
 function koap2()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 02', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 15.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 2.3 За разворот через сплошную линию. {B4452D} [Штраф: 10.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 3.1 За проезд на красный сигнал светофора. {B4452D} [Штраф: 5.000 +  Лишение водительского удостоверения]\n{FFFFFF} 4.1 За парковку ТС в неположенном месте {B4452D} [Штраф: 7.000]\n{FFFFFF} 5.1 За движение на ТС по тротуару, газону, пешеходным дорожкам и прочих, не проезжей части дорог. {B4452D} [Штраф: 7.000]\n{FFFFFF} 6.1 За игнорирование сирен спец. служб {B4452D} [Штраф: 7.000]\n{FFFFFF} 6.3 За игнорирование инспектора МВД {B4452D} [Штраф: 7.000]\n{FFFFFF} 7.1 За затруднение движения транспортным средством {B4452D} [Штраф: 5.000]\n{FFFFFF} 7.3 За езду на ТС в неисправном состоянии {B4452D} [Штраф: 8.000]\n{fbec5d} (Неисправное состояние - это когда машина дымится и движется без авариек)\n{FFFFFF} 8.1 За использование ненормативной лексики {B4452D} [Штраф: 8.000]\n{FFFFFF} 8.2 За оскорбление граждан {B4452D} [Штраф: 8.000]\n{FFFFFF} 8.3 За оскорбление сотрудника МВД при исполнении {B4452D} [Штраф: 15.000\n{FFFFFF} 9.1 За передвижение на ТС без регистрационного знака {B4452D} [Штраф: 5.000]\n{FFFFFF} 10.1 За агрессивное поведение на дороге, находясь в ТС, на водительском месте {B4452D} [Штраф: 10.000 +  Лишение водительского удостоверения]\n{FFFFFF} 11.1 За непристегнутый ремень безопасности во время движения на ТС {B4452D} [Штраф: 1.000]\n{FFFFFF} 11.2 За езду без шлема {B4452D} [Штраф: 3.000]\n{FFFFFF} 12.1 За движение на транспортном средстве, в котором степень светопропускания ниже 70%  {B4452D} [Штраф: 10.000]\n{FFFFFF} 13.1 За движение на ТС, без водительского удостоверения {B4452D} [Штраф: 10.000]\n{fbec5d} (C учетом того, что гражданин забыл их дома)\n{FFFFFF} 13.2 За передвижение гражданина по территории Нижегородской области без паспорта {B4452D} [Штраф: 10.000]\n{fbec5d} (C учетом того, что гражданин забыл их дома)\n{FFFFFF} 13.3 За отказ от предъявления водительского удостоверения/паспорта сотруднику МВД {B4452D} [Штраф: 15.000]\n{fbec5d} *Примечание к пунктам №13.1 - 13.3: \n{fbec5d} Сотрудник МВД обязан отыграть, что пробивает игрока через планшет\n{fbec5d} а именно: отыгрывает как он фотографирует игрока, пробивает игрока по базе и т.д.\n{FFFFFF} 17.1 За движение на ТС с выключенными фарами {B4452D} [Штраф: 2.500]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap02.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 02', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap3()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 03', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 5.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 2.3 Пересечение двойной сплошной {B4452D} [Штраф: 8.000]\n{FFFFFF} 2.4 Разворот через двойную сплошную {B4452D} [Штраф: 10.000]\n{FFFFFF} 3.1 За проезд красного сигнала светофора {B4452D} [Штраф: 3.000]\n{FFFFFF} 4.1. За парковку ТС в неположенном месте {B4452D} [Штраф: 15.000]\n{FFFFFF} 5.1. За движение ТС по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 57.000]\n{FFFFFF} 6.1. За игнорирование сирен спец. служб {B4452D} [Штраф: 4.000]\n{FFFFFF} 7.1. За создание аварийной ситуации, в т.ч. передвижению по проезжей части пешеходом {B4452D} [Штраф: 4.000]\n{fbec5d}Пример ситуаций к 7.1 :\n{fbec5d}превышение скорости;\n{fbec5d}нарушение требований знаков и разметки;\n{fbec5d}проезд на красный сигнал светофора;\n{fbec5d}нарушение правил перевозки грузов, буксировки транспортных средств;\n{fbec5d}нарушение правил остановки, стоянки;\n{fbec5d}нарушение правил проезда пешеходных переходов;\n{fbec5d}нарушение правил проезда перекрестков;\n{fbec5d}нарушение правил обгона и встречного разъезда;\n{fbec5d}нарушение правил учебной езды;\n{fbec5d}непредоставление преимущества в движении полиции, скорой или пожарным\n{FFFFFF} 7.2. За езду на ТС в неисправном состоянии {B4452D} [Штраф: 3.000 +  Лишение водительского удостоверения.]\n{fbec5d} (Неисправное состояние - это когда машина дымится и движется без авариек)\n{FFFFFF} 9.1. За агрессивное поведение на дороге будучи находясь в ТС на водительском месте {B4452D} [Штраф: 10.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 10.1. За езду без номеров {B4452D} [Штраф: 5.000]\n{FFFFFF} 12.1. За езду без пристёгнутого ремня безопасности {B4452D} [Штраф: 5.000]\n{FFFFFF} 12.2 За езду без одетого на голову мотошлема {B4452D} [Штраф: 5.000]\n{FFFFFF} 13.1 За оскорбление сотрудника правоохранительных органов {B4452D} [Штраф: 25.000]\n{fbec5d}(Пример: Мусора)\n{FFFFFF} 14.1 За езду на авто с нанесенной пленкой светопропускаемость которой ниже 50%  {B4452D} [Штраф: 15.000]\n{FFFFFF} 20.1. Оскорбление, то есть унижение чести и достоинства другого лица, выраженное в неприличной форме {B4452D} [Штраф: от 3.000 до 9.000]\n{FFFFFF} 20.3. Нанесение побоев или совершение иных насильственных действий  {B4452D} [Штраф: от 5.000 до 30.000]\n{FFFFFF} 20.5. Потребление наркотических средств или психотропных веществ без назначения врача {B4452D} [Штраф: от 5.000 до 10.000]\n{FFFFFF} 30.2. Нарушение правил перевозки, транспортирования оружия и патронов к нему {B4452D} [Штраф: от 1.000 до 2.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap03.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 03', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap4()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 04', u8:decode' \n\n{FFFFFF} 1.1 Нарушение правил остановки или стоянки транспортных {B4452D} [Штраф: 500]\n{FFFFFF} 1.4 Парковка ТС в неположенном месте {B4452D} [Штраф: 5.000]\n{FFFFFF} 1.5 Парковка ТС на прилегающей территории ( газон ) {B4452D} [Эвакуация транспортного средства]\n{FFFFFF} 2.1 Управление транспортным средством, не зарегистрированным в установленном порядке {B4452D} [Штраф: 5.000]\n{FFFFFF} 2.6 За агрессивное поведение на дороге находясь на водительском месте {B4452D} [Штраф: 10.000 + Лишение водительского удостоверения.]\n{FFFFFF} 3.1 Нарушение правил установки на транспортном средстве устройств для подачи специальных световых или звуковых сигналов {B4452D} [Штраф: 3.000]\n{FFFFFF} 4.1. За езду по встречной полосе {B4452D} [Штраф: 10.000 + Лишение водительского удостоверения.]\n{FFFFFF} 5.1 За проезд красного сигнала светофора {B4452D} [Штраф: 3.000]\n{FFFFFF} 6.1. За игнорирование сирен спец. служб  {B4452D} [Штраф: 5.000]\n{FFFFFF} 8.3. За управление ТС без включенного ближнего света фар {B4452D} [Штраф: 3.000]\n{FFFFFF} 8.4. За езду на ТС в неисправном состоянии {B4452D} [Штраф: 3.000]\n{FFFFFF} 9.2 За движение ТС по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 10.000]\n{FFFFFF} 9.3 За езду без пристёгнутого ремня безопасности {B4452D} [Штраф: 5.000]\n{FFFFFF} 9.4 Разворот/поворот через сплошную линию разметки {B4452D} [Штраф: 15.000]\n{FFFFFF} 9.5 Разворот/поворот через двойную сплошную линию разметки {B4452D} [Штраф: 25.000]\n{FFFFFF} 9.6 Движение по прерывистым линиям разметки {B4452D} [Штраф: 15.000]\n{FFFFFF} 11.1 Управление транспортным средством, на котором установлены стекла (в том числе покрытые цветными пленками)\n{FFFFFF} светопропускание которых ниже 50% {B4452D} [Штраф: 1.000]\n{FFFFFF} 11.5. За использование нецензурной лексики/оскорблений в сторону сотрудников МВД при исполнении {B4452D} [Штраф: 5.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap04.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 04', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap5()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 05', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 15.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 2.3 За разворот через сплошную линию {B4452D} [Штраф: 10.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 2.5 За проезд знака "Стоп" без полной остановки {B4452D} [Штраф: 5.000]\n{FFFFFF} 4.1 За парковку Т/С в неположенном месте {B4452D} [Штраф: 15.000]\n{FFFFFF} 5.1 За движение Т/С по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог, {B4452D} [Штраф: 10.000]\n{FFFFFF} 6.1 За игнорирование сирен спец. служб {B4452D} [Штраф: 5.000]\n{FFFFFF} 7.1 За затруднение движения транспортным средством {B4452D} [Штраф: 5.000]\n{FFFFFF} 7.2 За езду на Т/С в неисправном состоянии {B4452D} [Штраф: 8.000]\n{fbec5d}(неисправное состояние - это когда машина дымится и движется без аварийных сигналов).\n{FFFFFF} 8.1 Передвижение на Т/С без регистрационного знака {B4452D} [Штраф: 10.000]\n{fbec5d}*Примечание: номерной знак должен быть установлен в течение 7 дней с момента приобретения Т/С.\n{FFFFFF} 8.2 За не пристегнутый ремень безопасности во время движения на Т/С {B4452D} [Штраф: 2.000]\n{FFFFFF} 8.3 За езду без шлема {B4452D} [Штраф: 2.000]\n{FFFFFF} 9.1 За агрессивное поведение на дороге, находясь в Т/С на водительском месте {B4452D} [Штраф: 10.000 +  Лишение водительского удостоверения.]\n{FFFFFF} 10.1 За управление транспортным средством с лобовым стеклом, светопропускание которого ниже 75% {B4452D} [Штраф: 7.000]\n{FFFFFF} 10.2 За управление транспортным средством с передними боковыми стеклами, светопропускание которых ниже 70% {B4452D} [Штраф: 7.000]\n{FFFFFF} 11.1 За использование летних шин в зимний период {B4452D} [Штраф: 5.000]\n{fbec5d}[с 1 декабря по 28 (29) февраля] \n{FFFFFF} 13.1 За использование ненормативной лексики {B4452D} [Штраф: 3.000]\n{FFFFFF} 13.3 За оскорбление сотрудника МВД при исполнении {B4452D} [Штраф: 20.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap05.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 05', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap6()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 06', u8:decode' \n \n{FFFFFF} 2.1. За езду по встречной полосе {B4452D} [Штраф: 5.000 + Лишение водительского удостоверения.]\n{FFFFFF} 3.1 За проезд красного сигнала светофора  {B4452D} [Штраф: 3.000]\n{FFFFFF} 4.1. За парковку ТС в неположенном месте {B4452D} [Штраф: 15.000]\n{FFFFFF} 5.1. За движение ТС по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог  {B4452D} [Штраф: 5.000 + Лишение водительского удостоверения.]\n{FFFFFF} 6.1. За игнорирование сирен спец. служб  {B4452D} [Штраф: 4.000]\n{FFFFFF} 7.3. За управление ТС без включенного ближнего света фар{B4452D} [Штраф: 3.000]\n{fbec5d}(В случае если игрок НЕ с hassle, перед тем как выдать штраф полицейский прописывает \n{fbec5d}/id и смотрит с чего игрок играет. Штраф выдается в случае если игрок ТОЛЬКО с RADMIR)\n{FFFFFF} 7.4. За езду на ТС в неисправном состоянии {B4452D} [Штраф: 3.000 + Лишение водительского удостоверения.]\n{FFFFFF} 9.1. За агрессивное поведение на дороге будучи находясь в ТС на водительском месте{B4452D} [Штраф: 10.000 + Лишение водительского удостоверения.]\n{FFFFFF} 10.1. За езду без номеров в течении 3-х дней {B4452D} [Штраф: 5.000]\n{fbec5d}Повторное нарушение карается лишением водительских прав.\n{FFFFFF} 11.1. За езду без пристёгнутого ремня безопасности {B4452D} [Штраф: 5.000]\n{FFFFFF} 12.1 За езду на авто с нанесенной пленкой светопропускаемость которой ниже 50% {B4452D} [Штраф: 15.000]\n{fbec5d}Примечания: Задние стекла могут быть затонированы на все 100%\n{FFFFFF}20.1. Оскорбление, то есть унижение чести и достоинства другого лица, выраженное в неприличной форме {B4452D} [Штраф: от 1.000 до 3.000]\n{FFFFFF}20.3. Нанесение побоев или совершение иных насильственных действий, причинивших физическую боль{B4452D} [Штраф: от 5.000 до 30.000]\n{FFFFFF}20.5. Потребление наркотических средств или психотропных веществ без назначения врача {B4452D} [Штраф: от 5.000 до 10.000]\n{FFFFFF}30.2. Нарушение правил перевозки, транспортирования оружия и патронов к нему {B4452D} [Штраф: от 1.000 до 2.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap06.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 06', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap7()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 07', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 15.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 2.3 За разворот через сплошную линию {B4452D} [Штраф: 10.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 2.4 За пересечение сплошной линии {B4452D} [Штраф: 10.000, а так же лишение лицензии на управление Т/С. ]\n{fbec5d}*Примечание:\n{fbec5d}В случае аварийной ситуации на дороге, разрешается объехать ее по встречной полосе движения или развернуться \n{fbec5d}через сплошную, принудительно снизив скорость и убедиться что не создается помеха.\n{FFFFFF} 3.1 За проезд на запрещающий сигнал светофора {B4452D} [Штраф: 5.000]\n{FFFFFF} 4.1 За парковку Т/С в неположенном месте {B4452D} [Штраф: 7.500]\n{fbec5d}*Примечание:\n{fbec5d}Газоны(не считая территории частного дома)\n{fbec5d}Тротуары\n{fbec5d}Вход/выход из здания\n{fbec5d}Полоса встречного движения\n{fbec5d}Парковка на сплошной линии\n{fbec5d}Парковка авто на обочине скоростной трассы без аварийных сигналов\n{FFFFFF} 4.2 За парковку Т/С на скоростных трассах, без аварийных сигналов(обочина скоростной трассы) {B4452D} [Штраф: 10.000, а так-же эвакуация автомобиля, на штраф стоянку.]\n{FFFFFF} 5.1 За движение Т/С по тротуару, газону, пешеходных дорожкам и прочих не проезжих части дорог {B4452D} [Штраф: 10.000]\n{FFFFFF} 6.1 За игнорирование сирен/маячков спец. служб {B4452D} [Штраф: 5.000]\n{FFFFFF} 7.1 За затруднение движения транспортным средством {B4452D} [Штраф: 5.000]\n{FFFFFF} 7.2 За езду на Т/С в неисправном состоянии {B4452D} [Штраф: 8.000]\n{fbec5d}*Примечание:\n{fbec5d}Езда на авто с дымящим двигателем без аварийных сигналов\n{fbec5d}Езда на авто с пробитыми колесами без аварийных сигналов\n{fbec5d}Езда на авто с разбитыми фарами без аварийных сигналов(действует с 20:00 по 5:00 по серверному времени)\n{FFFFFF} 7.3 Тонировка свето-пропускаемости менее 35% переднего(лобового стекла) {B4452D} [Штраф: 20.000]\n{FFFFFF} 7.4 Тонировка свето-пропускаемости менее 50% двух передних окон(пассажирское и водительское) {B4452D} [Штраф: 10.000]\n{fbec5d}*Примечание:\n{fbec5d}Заднее стекло разрешается тонировать в самый низкий порог свето-пропускаемости.\n{FFFFFF} 8.1 За использование не нормативной лексики {B4452D} [Штраф: 6.000]\n{FFFFFF} 8.2 За оскорбление гражданского лица {B4452D} [Штраф: 5.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap07.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 07', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap7_2()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 07', u8:decode' \n \n{FFFFFF} 8.4 За оскорбление сотрудника при исполнении служебных обязанностей {B4452D} [Штраф: 15.000]\n{fbec5d}*Дополнение: За многократное и грубое оскорбление сотрудников, возможно лишение свободы сроком на 1 год.\n{FFFFFF} 9.1 Передвижение на Т/С без регистрационного знака {B4452D} [Штраф: 10.000]\n{fbec5d}*Примечание:\n{fbec5d}Должны пройти сутки с момента покупки авто\n{FFFFFF} 9.2 За передвижение на любом виде авто, без документов {B4452D} [Штраф: 5.000]\n{fbec5d}*Примечание:\n{fbec5d}Если авто является личным, банды, доверенный автомобиль.\n{FFFFFF} 10.1 За агрессивное поведение на дороге будучи находясь в Т/С на водительском месте {B4452D} [Штраф: 5.000, а так-же эвакуация автомобиля, на штраф стоянку.]\n{FFFFFF} 11.1 За не пристегнутый ремень безопасности во время движения на Т/С {B4452D} [Штраф: 2.000]\n{FFFFFF} 11.2 За езду без шлема последует штраф {B4452D} [Штраф: 2.000]\n{FFFFFF} 13.1 За езду без включённых фар {B4452D} [Штраф: 2.500]\n{fbec5d}*Примечание:\n{fbec5d}Данный пункт действует с 20:00 вечера до 5:00 утра по серверному времени\n{FFFFFF} 14.1 При проверке сотрудник МВД может произвести обыск у гражданина, если у гражданина находят патроны и у него отсутствует лицензия(на оружие) {B4452D} [Штраф: 15.000]\n{FFFFFF} 15.1 За ношение оружия в общественных местах (зонах ZZ) {B4452D} [Штраф: 20.000]\n{fbec5d}За использование оружия в общественных местах (зонах ZZ), \n{fbec5d}включая стрельбу в воздух без причины, стрельбу по зданиям, транспортным средствам и другим объектам, следует лишение лицензии на оружие (при её наличии).\n{FFFFFF} 16.2 За оскорбление сотрудника правоохранительных органов {B4452D} [Штраф: 5.000]\n{FFFFFF} 22.1 За использование зимних шин в весенне-осенний период {B4452D} [Штраф: 8.000]\n{fbec5d}*Примечание: с 1 марта по 30 ноября.\n{FFFFFF} 22.2 За использование летних шин в зимний период {B4452D} [Штраф: 16.000]\n{fbec5d}*Примечание: с 1 декабря по 28(29) февраля.\n{FFFFFF} 23.1 За угрозы причинения вреда здоровью/смертью/убийству {B4452D} [Штраф: 25.000]\n{fbec5d}Дополнение: возможно лишение свободы, сроком на 1 год.\n{fbec5d}!ВАЖНО!\n{fbec5d}Выдача штрафа или арест, напрямую зависит от контекста сказанного.\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap07_2.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 07', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap8()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 08', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 15.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 2.3 За разворот через сплошную линию {B4452D} [Штраф: 10.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 3.1. За проезд красного сигнала светофора {B4452D} [Штраф: 5.000]\n{FFFFFF} 4.1 За парковку Т/С в неположенном месте {B4452D} [Штраф: 7.500]\n{FFFFFF} 4.2 За парковку Т/С на скоростных трассах, без аварийных сигналов(обочина скоростной трассы) {B4452D} [Штраф: 10.000]\n{FFFFFF} 5.2. За игнорирование сирен спец. служб {B4452D} [Штраф: 5.000]\n{FFFFFF} 5.4. За езду на Т/С в неисправном состоянии {B4452D} [Штраф: 8.000]\n{fbec5d}(неисправное состояние - это когда машина дымится и движется без аварийных сигналов).\n{FFFFFF} 6.1. Передвижение на Т/С без регистрационного знака {B4452D} [Штраф: 10.000]\n{FFFFFF} 7.1. За агрессивное поведение на дороге будучи находясь в Т/С на водительском месте {B4452D} [Штраф: 5.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 8.1. За не пристегнутый ремень безопасности во время движения на Т/С {B4452D} [Штраф: 2.000]\n{FFFFFF} 8.2. За езду без шлема {B4452D} [Штраф: 2.000]\n{FFFFFF} 9.1. За езду без включённых фар (с 20:00 - 07:00) {B4452D} [Штраф: 2.500]\n{FFFFFF} 9.2. За езду с повреждёнными фарами {B4452D} [Штраф: 3.000]\n{FFFFFF} 11.1. За езду на транспортном средстве, стекла которого имеют светопропускаемость менее чем 80%, {B4452D} [Штраф: 10.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap08.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 08', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap9()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 09', u8:decode' \n \n{FFFFFF} 1.1. Езда на ТС без установленных на нём государственных регистрационных знаков. {B4452D} [Штраф: 8.000]\n{FFFFFF} 1.3 Игнорирование требований сотрудников ГИБДД. {B4452D} [Штраф: 15.000]\n{FFFFFF} 1.4 Передвижение на ТС, не имея при себе водительского удостоверения или отказ от его предоставления. {B4452D} [Штраф: 15.000]\n{FFFFFF} 2.1. Езда по полосе встречного движения. {B4452D} [Штраф: 10.000]\n{FFFFFF} 3.1. Проезд на запрещающий сигнал светофора. {B4452D} [Штраф: 7.000]\n{FFFFFF} 4.1. Парковка ТС на газонах, тротуарах, а также в иных не предназначенных для этого местах. {B4452D} [Штраф: 3.000]\n{FFFFFF} 4.4 Парковка ТС в местах, прилегающих к зданиям государственных организаций, где транспортное средство закроет проезд или создаст помеху сотрудникам. {B4452D} [Штраф: 7.000]\n{FFFFFF} 5.1. Движение ТС по тротуару, газону, пешеходным дорожкам, а также в иных не предназначенных для этого местах. {B4452D} [Штраф: 10.000]\n{FFFFFF} 5.2. Разворот ТС на пешеходных переходах и ближе 10 метров от них с обеих сторон; на мостах, путепроводах, эстакадах и под ними; \n{FFFFFF}на железнодорожных переездах; в местах расположения остановочных пунктов маршрутных транспортных средств. {B4452D} [Штраф: 15.000]\n{FFFFFF} 6.1. Игнорирование видимых и звуковых сигналов спец.служб {B4452D} [Штраф: 20.000]\n{FFFFFF} 6.2. Намеренное создание препятствий в работе спец.служб {B4452D} [Штраф: 20.000 и лишение В.У.]\n{FFFFFF} 7.3. Управление ТС без включенного ближнего света фар. {B4452D} [Штраф: 2.500]\n{FFFFFF} 7.4. Езда на неисправном ТС. {B4452D} [Штраф: 4.000]\n{FFFFFF} 7.5. Агрессивная езда, опасная для других участников движения. {B4452D} [Штраф: 20.000 и лишение В.У]\n{fbec5d}(*Лишение Водительского Удостоверения на усмотрение инспектора ГИБДД)\n{FFFFFF} 9.1. Разворот/поворот через сплошную линию разметки {B4452D} [Штраф: 8.000]\n{FFFFFF} 9.2. Разворот/поворот через двойную сплошную линию разметки. {B4452D} [Штраф: 15.000]\n{FFFFFF} 9.3. Движение по прерывистым линиям разметки {B4452D} [Штраф: 4.000]\n{FFFFFF} 10.6 Езда с не пристегнутыми ремнями безопасности/без использования шлемов на мото-вело-транспорте. {B4452D} [Штраф: 3.000]\n{FFFFFF} 10.7 Если видимость через тонировку достигает 50% {B4452D} [Штраф: 5.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap09.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 09', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap10()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 10', u8:decode' \n \n{FFFFFF} 2.1. Езда по встречной полосе. {B4452D} [Штраф: 5.000, лишение водительского удостоверения.]\n{FFFFFF} 3.1. Проезд красного сигнала светофора. {B4452D} [Штраф: 3.000]\n{FFFFFF} 4.1. Парковка транспортного средства в неположенном месте. {B4452D} [Штраф: 5.000, эвакуация транспортного средства на штрафстоянку.]\n{FFFFFF} 5.1. Движение транспортного средства по тротуару, газону, \n{FFFFFF} пешеходным дорожкам и прочим местам, неположенным для движения автомобилей. {B4452D} [Штраф: 5.000, лишение водительского удостоверения.]\n{FFFFFF} 6.1. Игнорирование сирен спец. служб. {B4452D} [Штраф: 4.000]\n{FFFFFF} 6.3. За игнорирование требований инспектора ДПС. {B4452D} [Штраф: 15.000]\n{FFFFFF} 7.3. Управление транспортным средством без включенного ближнего света фар {B4452D} [Штраф: 3.000, за повторное нарушение штраф 6.000 рублей.]\n{FFFFFF} 7.4. Управление транспортным средством в неисправном состоянии. {B4452D} [Штраф: 3.000, за повторное нарушение штраф 6.000 рублей.]\n{FFFFFF} 5.2. Разворот ТС на пешеходных переходах и ближе 10 метров от них с обеих сторон; на мостах, путепроводах, эстакадах и под ними; \n{FFFFFF}на железнодорожных переездах; в местах расположения остановочных пунктов маршрутных транспортных средств. {B4452D} [Штраф: 15.000]\n{FFFFFF} 8.3. Оскорбление сотрудника при исполнении. {B4452D} [Штраф: 15.000]\n{FFFFFF} 9.1. Агрессивное вождение, которое может привести к ДТП. {B4452D} [Штраф: 10.000, лишение водительского удостоверения.]\n{FFFFFF} 10.1. Передвижение на транспортном средстве без регистрационного знака. {B4452D} [Штраф: 5.000, повторное нарушение - лишение водительского удостоверения.]\n{FFFFFF} 12.1. Езда на транспортном средстве без ремня безопасности. {B4452D} [Штраф: 5.000]\n{FFFFFF} 12.2. Езда без защитного шлема на мототранспорте. {B4452D} [Штраф: 5.000]\n{FFFFFF} 13.1. Езда на транспортном средстве, стекла которого имеют степень светопропускания менее 70%. {B4452D}\n{FFFFFF} 14.1. Отказ/Нежелание гражданина предоставить сотруднику правоохранительных органов удостоверения личности\n{B4452D}Наказание: штраф 15.000, доставка в отдел для уточнения личности.\n{FFFFFF} 14.2. Отказ/Нежелание гражданина предоставить сотруднику правоохранительных органов документов на транспорт.\n{B4452D}Наказание: штраф 15.000, доставка в отдел для уточнения данных об авто.\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap10.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 10', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap11()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 11', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 20.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 2.3. За проезд/пересечение/разворот через сплошную линию {B4452D} [Штраф: 15.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 3.1. За проезд красного сигнала светофора {B4452D} [Штраф: 10.000]\n{FFFFFF} 4.1. За парковку Т/С в неположенном месте {B4452D} [Штраф: 11.500]\n{FFFFFF} 4.2. За движение Т/С по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 15.000]\n{FFFFFF} 5.2 За игнорирование сирен спец. служб  {B4452D} [Штраф: 10.000]\n{FFFFFF} 5.3. За игнорирование сирен спец. служб, в следствии чего произошло ДТП {B4452D} [Штраф: 10.000, а так же лишение лицензии на управление Т/С.]\n{FFFFFF} 5.4. За езду на Т/С в неисправном состоянии {B4452D} [Штраф: 12.000]\n{fbec5d}неисправное состояние - это когда машина дымится и движется без аварийных сигналов).\n{FFFFFF} 6.1. Передвижение на Т/С без регистрационного знака {B4452D} [Штраф: 15.000]\n{fbec5d}( Если у машины пробег меньше 20 км или с момента ее покупки не прошло 24ч, то штраф не выдается. )\n{FFFFFF} 6.2. При повтором передвижение на Т/С без регистрационного знака {B4452D} [Штраф: 25.000]\n{FFFFFF} 7.1. За агрессивное поведение на дороге будучи находясь в Т/С на водительском месте {B4452D} [Штраф: 10.000, а так же лишение лицензии на управление Т/С.\n{FFFFFF} 8.1. За не пристегнутый ремень безопасности во время движения на Т/С {B4452D} [Штраф: 7.000]\n{FFFFFF} 8.2. За езду без шлема  {B4452D} [Штраф: 7.000]\n{FFFFFF} 10.1. За езду без включённых фар ночью (22:00 - 6:00) {B4452D} [Штраф: 10.000]\n{FFFFFF} 11.1. Непредоставление преимущества в движении транспортному средству спец. служб \n{FFFFFF}с одновременно включенными проблесковым маячком синего цвета и специальным звуковым сигналом {B4452D} [Штраф: 8.000]\n{FFFFFF} 13.1. Передвижение на Т/C с износам шин 0% {B4452D} [Штраф: 10.000]\n{fbec5d}(Проверить шины нужно через Аппарат для диагностики.)\n{FFFFFF} 13.2. При повторном передвижение на Т/C с износам шин 0% {B4452D} [Штраф: 15.000]\n{FFFFFF} 14.1. Если на Т/C светопропускаемость лобового или передних стекол ниже 50% {B4452D} [Штраф: 15.000]\n{FFFFFF} 14.2. За повторное нарушение пункт 1 {B4452D} [Штраф: 25.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap11.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 11', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap12()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 12', u8:decode' \n \n{FFFFFF} Часть 1 статья 1. Езда на ТС без установленных на нём государственных регистрационных знаков \n{FFFFFF}( номеров ) в случае, если пробег автомобиля составляет более 100 километров {B4452D} [Штраф: 10.000 и лишение ВУ.]\n{FFFFFF} Часть 1 статья 3. Передвижение на ТС, не имея при себе водительского удостоверения или отказ от его предоставления {B4452D} [Штраф: 15.000]\n{FFFFFF} Часть 2 статья 1. Отсутствие надетого ремня безопасности {B4452D} [Штраф: 6.000]\n{FFFFFF} Часть 2 статья 3. Отсутствие надетого ремня безопасности у пассажира {B4452D} [Штраф: 3.000]\n{fbec5d}Штраф выписывается водителю.\n{FFFFFF} Часть 2 статья 4. Отсутствие шлема у водителя мототранспорта {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 2 статья 5. Отсутствие шлема у пассажира мототранспорта  {B4452D} [Штраф: 10.000 - Водитель | 5.000 - Пассажир]\n{fbec5d}Штраф выписывается водителю и пассажиру.\n{FFFFFF} Часть 3 статья 5. Игнорирование видимых и звуковых сигналов спецслужб {B4452D} [Штраф: 20.000 и лишение ВУ.]\n{FFFFFF} Часть 4 статья 3. За разворот/поворот через сплошную линию  {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 4 статья 4. За разворот/поворот через двойную сплошную линию {B4452D} [Штраф: 10.000]\n{FFFFFF} Часть 5 статья 1. За парковку транспортного средства в неположенном месте {B4452D} [Штраф: 5.000]\n{fbec5d}( (в случае отсутствия водителя буксировка ТС на штрафстоянку). )\n{FFFFFF} Часть 5 статья 2. За парковку транспортного средства на газоне, тротуаре (Без включенной аварийной сигнализации) {B4452D} [Штраф: 7.000 или буксировка ТС на штрафстоянку]\n{FFFFFF} Часть 5 статья 5. Парковка близ госучреждений, вне парковочных мест {B4452D} [Штраф: 10.000 или буксировка на штрафстоянку]\n{FFFFFF} Часть 6 статья 1. Намеренное движение ТС по встречной полосе движения {B4452D} [Штраф: 20.000]\n{FFFFFF} Часть 7 статья 1. Проезд на запрещающий сигнал светофора {B4452D} [Штраф: 15.000]\n{FFFFFF} Часть 7 статья 3. Начало движения на предупреждающий (жёлтый цвет) светофора {B4452D} [Штраф: 10.000]\n{FFFFFF} Часть 7 статья 5. Объезд светофора путём пересечения сплошной/двойной сплошной линии по встречной полосе {B4452D} [Штраф: 25.000 и лишение ВУ.]\n{FFFFFF} Часть 11 статья 1. Использование тонировки 50% видимости и менее {B4452D} [Штраф: 1.000]\n{FFFFFF} Часть 11 статья 2. Использование тонировки 51% видимости и более {B4452D} [Штраф: 3.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap12.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 12', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap13()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 13', u8:decode' \n \n{FFFFFF} Часть 2 статья 1. За езду по встречной полосе {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 2 статья 3. Остановка на встречной полосе. {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 3 статья 1. За проезд на запрещающий сигнал светофора {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 4 статья 2. За парковку транспортного средства на газоне,тротуаре (Без включенных аварийных сигналов) {B4452D} [Штраф: 10.000]\n{B4452D}[Или эвакуация транспортного средства на Штраф стоянку и штраф в размере 15.000 Рублей]\n{FFFFFF} Часть 5 статья 1. За движение ТС по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог. {B4452D} [Штраф: 5.000  и лишение В.У.]\n{FFFFFF} Часть 6 статья 1. Игнорирование видимых и звуковых сигналов спец.служб. {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 7 статья 3. Управление ТС без включенного ближнего света фар {B4452D} [Штраф: 3.000]\n{FFFFFF} Часть 7 статья 4. Езда на неисправном ТС {B4452D} [Штраф: 3.000]\n{FFFFFF} Часть 8 статья 1. За пересечение сплошной линии. {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 8 статья 2. За пересечение двойной сплошной линии {B4452D} [Штраф: 10.000]\n{FFFFFF} Часть 8 статья 5. За разворот/поворот через сплошную линию. {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 8 статья 6. За разворот/поворот через двойную сплошную линию. {B4452D} [Штраф: 10.000]\n{FFFFFF} Часть 9 статья 1. За агрессивное поведение на дороге будучи находясь в ТС наводительском месте {B4452D} [Штраф: 10.000 и лишение ВУ.]\n{FFFFFF} Часть 10 статья 1. Езда на ТС без установленных на нём государственных регистрационных знаков. {B4452D} [Штраф: 5.000]\n{B4452D}(Исключение: На Т/С пробег менее 30км.)\n{FFFFFF} Часть 12 статья 6. Езда с непристегнутыми ремнями безопасности/без использования шлемов на мото-вело-транспорте. {B4452D} [Штраф: 3.000]\n{FFFFFF} Часть 14 статья 1. За езду на транспортном средстве, в котором степень светопропускания ниже 70% {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 15 статья 1. Передвижение на ТС, без водительского удостоверения с учётом того, что гражданин забыл их дома {B4452D} [Штраф: 5.000]\n{FFFFFF} Часть 15 статья 2. Отказ от предъявления водительского удостоверения/паспорта сотруднику МВД наказуем статьей 8.1 УК , а так же {B4452D} [Штраф: 10.000]\n{fbec5d}Примечание:\n{fbec5d}Сотрудник МВД обязан отыграть, что пробивает игрока через планшет, а именно отыгрывает как он фоткает игрока и/или пробивает игрока по базе и т.д.\n{fbec5d}Если подобной отыгровки не будет – штраф будет считаться неверно выданным.\n{FFFFFF} Часть 17 статья 1. За езду с шинами не по сезону (весной/летом/осенью с зимними шинами, зимой с летними) {B4452D} [Штраф: 3.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap13.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 13', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap14()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 14', u8:decode' \n \n{FFFFFF}​Статья 5.1. Оскорбление \n{FFFFFF}1. За оскорбление, которое проявляется в неприличной или несогласованной с общепринятыми моральными нормами форме {B4452D} [Штраф: 5.000]\n{FFFFFF}2. За оскорбление, содержащееся в публичном выступлении или демонстрируемое средствами массовой информации {B4452D} [Штраф: 10.000]\n{FFFFFF}3. За оскорбление, совершенное государственным служащим в связи с исполнением его обязанностей {B4452D} [Штраф: 25.000]\n{FFFFFF}Статья 8.1. Управление транспортным средством с нарушением правил установки на нем государственных регистрационных знаков\n{FFFFFF}Использование транспортного средства без установленных на предусмотренных для этого местах \n{FFFFFF}государственных регистрационных знаков в течение более 3 суток влечет {B4452D} [Штраф: 5.000]\n{FFFFFF}Статья 8.2. Управление транспортным средством водителем, не имеющим при себе документов\n{FFFFFF}Управление транспортным средством водителем без наличия при себе регистрационных документов {B4452D} [Штраф: 500]\n{FFFFFF}Статья 8.3. Нарушение правил применения ремней безопасности или мотошлемов\n{FFFFFF}Управление транспортным средством водителем или перевозка пассажиров без пристегнутых ремней безопасности, \n{FFFFFF}если транспортное средство оснащено такими ремнями, а также управление мотоциклом или мопедом или перевозка на мотоцикле пассажиров без мотошлемов {B4452D} [Штраф: 1.000]\n{FFFFFF}Статья 8.6. Проезд на запрещающий сигнал светофора\n{FFFFFF}Проезд на запрещающий сигнал светофора {B4452D} [Штраф: 1.000]\n{FFFFFF}Статья 8.8. Непредоставление преимущества в движении транспортному средству с включенными специальными световыми и звуковыми сигналами\n{FFFFFF}Непредоставление преимущества в движении транспортному средству с одновременно включенными проблесковым \n{FFFFFF}маячком синего цвета и специальным звуковым сигналом {B4452D} [Штраф: 5.000]\n{FFFFFF}Статья 8.10. Нарушение правил остановки или стоянки транспортных средств\n{FFFFFF}1. Нарушение правил остановки или стоянки транспортных средств  {B4452D} [Штраф: 500]\n{FFFFFF}2. Нарушение правил остановки или стоянки транспортных средств на проезжей части, если это приводит к созданию препятствий \n{FFFFFF}для движения других транспортных средств, за исключением вынужденной остановки {B4452D} [Штраф: 1.000]\n{FFFFFF}Статья 8.12. Управление транспортным средством с тонировкой\n{FFFFFF}Управление транспортным средством, на котором установлены стекла, светопропускание которых составляет менее 70% {B4452D} [Штраф: 1.000]\n{FFFFFF}Статья 10.1. Неповиновение законному распоряжению сотрудников полиции и военнослужащих\n{FFFFFF}Неповиновение законному распоряжению или требованию сотрудника полиции, военнослужащего в связи с исполнением ими обязанностей по охране \n{FFFFFF}общественного порядка и обеспечению безопасности, а также воспрепятствование исполнению ими служебных обязанностей {B4452D} [Штраф: 10.000]\n', u8:decode'Закрыть')
-    end) 
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap14.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 14', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap15()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 15', u8:decode' \n \n{FFFFFF}2.1 За езду по встречной полосе {B4452D} [Штраф: 20.000, лишение водительского удостоверения.]\n{FFFFFF}2.3 За разворот через сплошную линию {B4452D} [Штраф: 10.000, лишение водительского удостоверения.]\n{FFFFFF}2.4 За проезд через сплошную линию {B4452D} [Штраф: 5.000, лишение водительского удостоверения.]\n{FFFFFF}3.1 За проезд красного сигнала светофора {B4452D} [Штраф: 15.000]\n{FFFFFF}4.1 За парковку ТС в неположенном месте {B4452D} [Штраф: 15.000]\n{FFFFFF}5.1 За движение ТС по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 10.000]\n{FFFFFF}6.1 За игнорирование сирен спец. служб {B4452D} [Штраф: 25.000]\n{FFFFFF}6.3 За игнорирование требования сотрудника правоохранительных органов {B4452D} [Штраф: 25.000]\n{FFFFFF}7.3 За езду на ТС в неисправном состоянии {B4452D} [Штраф: 5.000]\n{FFFFFF}(неисправное состояние - это когда машина дымится и движется без авариек)\n{FFFFFF}8.1 За использование ненормативной лексики {B4452D} [Штраф: 5.000]\n{FFFFFF}8.2 За оскорбления сотрудников при исполнении {B4452D} [Штраф: 5.000]\n{FFFFFF}9.1 Передвижение на ТС без регистрационного знака {B4452D} [Штраф: 20.000]\n{fbec5d}(выдавать штраф можно если автомобиль проехал больше 55 км)\n{FFFFFF}10.1 За агрессивное поведение на дороге водитель транспортного средства {B4452D} [Штраф: 15.000, лишение водительского удостоверения.]\n{FFFFFF}11.1 За не пристегнутый ремень безопасности во время движения на ТС {B4452D} [Штраф: 1.000]\n{FFFFFF}11.2 За езду без шлема последует {B4452D} [Штраф: 1.500]\n{FFFFFF}11.3 За езду с выключенными фарами в любое время суток {B4452D} [Штраф: 2.000]\n{fbec5d}(Исключение: если машина сломана или серьезно повреждена штраф не выдаётся.)\n{FFFFFF}13.1 Управление транспортным средством, на котором установлены стекла (в том числе покрытые прозрачными цветными пленками), \n{FFFFFF}светопропускание которых не соответствует требованиям технического регламента о безопасности колесных транспортных средств (менее 70%) {B4452D} [Штраф: 5.000]\n{FFFFFF}14.1 Передвижение на ТС, без водительского удостоверения с учётом того, что гражданин забыл {B4452D} [Штраф: 10.000]\n{FFFFFF}14.2 Передвижение гражданина по территории Нижегородской области без паспорта с учётом того, что гражданин забыл документы {B4452D} [Штраф: 10.000]\n{FFFFFF}14.3 Отказ от предъявления водительского удостоверения/паспорта сотруднику МВД наказуем статьей 8.1 УК РФ, а так же штрафом {B4452D} [Штраф: 15.000]\n{FFFFFF}Примечание к пункту 14.2, 14.3 и 14.1: Сотрудник МВД обязан отыграть, что пробивает игрока через планшет, \n{FFFFFF}а именно отыгрывает как он фоткает игрока, пробивает игрока по базе и.т.д. Если подобной отыгровки не будет - штраф будет считаться неверно выданным.\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap15.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 15', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap16()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 16', u8:decode' \n \n{FFFFFF} 1.1 Езда на ТС без установленных на нём государственных регистрационных знаков. {B4452D} [Штраф: 8.000]\n{FFFFFF} 1.2 Езда на ТС в состоянии алкогольного опьянения. {B4452D} [Штраф: 20.000 и лишение ВУ]\n{FFFFFF} 1.3 Игнорирование требований сотрудников ГИБДД. {B4452D} [Штраф: 15.000]\n{FFFFFF} 1.4 Передвижение на ТС, не имея при себе водительского удостоверения или отказ от его предоставления. {B4452D} [Штраф: 15.000]\n{FFFFFF} 2.1 Езда по полосе встречного движения. {B4452D} [Штраф: 10.000]\n{FFFFFF} 3.1 Проезд на запрещающий сигнал светофора. {B4452D} [Штраф: 7.000]\n{FFFFFF} 4.1 Парковка ТС на газонах, тротуарах, а также в иных не предназначенных для этого местах. {B4452D} [Штраф: 3.000]\n{FFFFFF} 5.1 Движение ТС по тротуару, газону, пешеходным дорожкам, а также в иных не предназначенных для этого местах. {B4452D} [Штраф: 10.000]\n{FFFFFF} 6.1 Игнорирование видимых и звуковых сигналов спец.служб. {B4452D} [Штраф: 20.000]\n{FFFFFF} 6.3 Игнорирование видимых и звуковых сигналов спец. служб, в следствии чего произошло ДТП. {B4452D} [Штраф: 20.000 и лишение ВУ]\n{FFFFFF} 7.3 Управление ТС без включенного ближнего света фар. {B4452D} [Штраф: 2.500]\n{FFFFFF} 7.4 Езда на неисправном ТС. {B4452D} [Штраф: 4.000]\n{FFFFFF} 7.5 Агрессивная езда, опасная для других участников движения. {B4452D} [Штраф: 20.000 и лишение В.У*]\n{fbec5d}(*Лишение Водительского Удостоверения на усмотрение инспектора ГИБДД)\n{FFFFFF} 9.1 Разворот/поворот через сплошную линию разметки. {B4452D} [Штраф: 8.000]\n{FFFFFF} 9.2 Разворот/поворот через двойную сплошную линию разметки. {B4452D} [Штраф: 15.000]\n{FFFFFF} 9.3 Движение по прерывистым линиям разметки. {B4452D} [Штраф: 4.000]\n{FFFFFF} 10.6 Езда с не пристегнутыми ремнями безопасности/без использования шлемов на мото-вело-транспорте. {B4452D} [Штраф: 3.000]\n{FFFFFF} 10.7 Езда с тонировкой, несоответствующей установленным требованиям, а именно в 50 и менее процентов светопропускания. {B4452D} [Штраф: 4.000]\n{FFFFFF} 11.1 Оскорбление гражданского во время разговора или криками на всю улицу/помещение. {B4452D} [Штраф: 3.000]\n{FFFFFF} 11.2 Оскорбление сотрудника правоохранительных органов. {B4452D} [Штраф: 5.000]\n{fbec5d} При повторном оскорблении: {B4452D} [Штраф: 15.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap16.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 16', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap17()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 17', u8:decode' \n \n{FFFFFF}  2.1 За езду по встречной полосе {B4452D} [Штраф: 20.000]\n{FFFFFF}  2.3 За разворот через сплошную линию {B4452D} [Штраф: 15.000, а так же лишение водительских прав]\n{FFFFFF}  3.1 За парковку Т/С в неположенном месте {B4452D} [Штраф: 15.000]\n{FFFFFF}  3.2 За движение Т/С по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 10.000]\n{FFFFFF}  4.2 За игнорирование сирен спец. служб  {B4452D} [Штраф: 15.000]\n{FFFFFF}  4.4 За езду на Т/С в неисправном состоянии {B4452D} [Штраф: 8.000]\n{fbec5d} (неисправное состояние - это когда машина дымится и движется без аварийных сигналов).\n{FFFFFF}  5.1 Езда на ТС без установленных на нём государственных регистрационных знаков ( номеров ) в случае, \n{FFFFFF}если пробег автомобиля составляет более 100 километров {B4452D} [Штраф: 25.000]\n{FFFFFF}  6.1 За агрессивное поведение на дороге будучи находясь в Т/С на водительском месте{B4452D} [Штраф: 15.000, а так же лишение водительских прав]\n{fbec5d} ( уточнение : сильное столкновение = таран, неоднократный подрез. Езда с выездом на встречную полосу.)\n{FFFFFF}  7.1 За не пристегнутый ремень безопасности во время движения на Т/С {B4452D} [Штраф: 2.000]\n{FFFFFF}  7.2 За езду без шлема {B4452D} [Штраф: 2.000]\n{FFFFFF}  9.1 Непредоставление преимущества в движении транспортному средству спец. служб с одновременно включенными проблесковым маячком \n{FFFFFF} синего цвета и специальным звуковым сигналом {B4452D} [Штраф: 3.000]\n{FFFFFF}  10.1 Оскорбление гражданского во время разговора или криками на всю улицу/помещение {B4452D} [Штраф: 10.000]\n{FFFFFF}  10.2 Оскорбление сотрудника правоохранительных органов {B4452D} [Штраф: 10.000]\n{fbec5d} ( например "дурак, идиот, тупой и т.д." не считается грубым)\n{fbec5d} При повторном оскорблении в грубой форме: лишение свободы сроком на 1 год.\n{FFFFFF}  11.1 Использование тонировки на передних стеклах или лобовом стекле, светопропускаемостью от 50% (включительно) до 80% (не включительно) {B4452D} [Штраф: 1.000]\n{FFFFFF}  11.2 Использование тонировки на передних стеклах или лобовом стекле, светопропускаемостью ниже 50% (не включительно). {B4452D} [Штраф: 3.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap17.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 17', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap18()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 18', u8:decode' \n \n{FFFFFF} 2.1. Езда по встречной полосе. {B4452D} [Штраф: 10.000]\n{FFFFFF} 3.1. Проезд красного сигнала светофора. {B4452D} [Штраф: 15.000]\n{FFFFFF} 4.1. Парковка транспортного средства в неположенном месте. {B4452D} [Штраф: Эвакуация транспортного средства на штрафстоянку]\n{FFFFFF} 5.1. Движение транспортного средства по тротуару, газону, пешеходным дорожкам и прочим местам, неположенным для движения автомобилей. {B4452D} [Штраф: 20.000]\n{FFFFFF} 6.1. Игнорирование сирен спец. служб. {B4452D} [Штраф: 25.000]\n{FFFFFF} 6.3. За игнорирование требований инспектора ДПС. {B4452D} [Штраф: 15.000]\n{FFFFFF} 7.3. Управление транспортным средством без включенного ближнего света фар. {B4452D} [Штраф: 7.500]\n{FFFFFF} 7.4. Управление транспортным средством в неисправном состоянии. {B4452D} [Штраф: 7.500]\n{FFFFFF} 8.1 Использование ненормативной лексики, оскорбление в легкой форме. {B4452D} [Штраф: 5.000]\n{FFFFFF} 8.3. Оскорбление сотрудника в легкой форме при исполнении. {B4452D} [Штраф: 20.000]\n{FFFFFF} 9.1. Агрессивное вождение, которое может привести к ДТП. {B4452D} [Штраф: 20.000]\n{FFFFFF} 10.1. Передвижение на транспортном средстве без регистрационного знака. {B4452D} [Штраф: 25.000]\n{fbec5d} Исключение: Транспортное средство приобретено в день проверки.\n{FFFFFF} 12.1. Езда на транспортном средстве без ремня безопасности. {B4452D} [Штраф: 5.500]\n{FFFFFF} 12.2. Езда без защитного шлема на мототранспорте. {B4452D} [Штраф: 5.500]\n{FFFFFF} 13.1. Езда на транспортном средстве, стекла которого имеют степень светопропускания менее 70%. {B4452D} [Штраф: 10.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap18.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 18', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap19()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 19', u8:decode' \n \n{FFFFFF} 1.1. Оскорбление, то есть унижение чести и достоинства другого лица, выраженное в неприличной форме {B4452D} [Штраф: от 10.000 до 15.000]\n{FFFFFF} 3.1. За езду по встречной полосе последует {B4452D} [Штраф: 25.000, а так же лишение лицензии на управление ТС]\n{FFFFFF} 4.1 За проезд красного сигнала светофора {B4452D} [Штраф: 15.000]\n{FFFFFF} 5.1. За парковку, остановку, стоянку ТС в неположенном месте (тротуар, газон, жд пути, служебные парковки гос. орг) {B4452D} [Штраф: 15.000 или Эвакуация ТС]\n{FFFFFF} 5.2 Совершение нарушения правил остановки, стоянки или парковки ТС на проезжей части, что приводит к созданию препятствий для движения других автомобилей влечет наложение административного штрафа в размере 25.000 рублей/эвакуация.\n{FFFFFF} 6.1. За движение ТС по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 20.000, а так же лишение лицензии на управление ТС]\n{FFFFFF} 7.1 Игнорирование законной просьбы сотрудника полиции о прекращении движения транспортного средства. {B4452D} [Штраф: 50.000, а так же лишение лицензии на управление ТС]\n{FFFFFF} 8.3. За управление ТС без включенного ближнего света фар {B4452D} [Штраф: 5.000]\n{FFFFFF} 9.1. За неуплату штрафов за нарушение КоАП или за датчики фиксации в простонародье радаров {B4452D} [Штраф: 15.000]\n{FFFFFF} 10.1. За агрессивное поведение на дороге будучи находясь в ТС на водительском месте {B4452D} [Штраф: 25.000, а так же лишение лицензии на управление ТС]\n{FFFFFF} 10.2. Дрифт на проезжей части и прилегающей территории. {B4452D} [Штраф: 50.000]\n{FFFFFF} 11.1. Управление транспортным средством, которое не прошло регистрационные процедуры в соответствии с установленными правилами. \n{FFFFFF} Управление ТС без номерных знаков разрешено, если ТС имеет не более 40 км пробега. {B4452D} [Штраф: 20.000]\n{FFFFFF} 13.1. За езду без пристёгнутого ремня безопасности {B4452D} [Штраф: 10.000]\n{FFFFFF} 14.1 За езду на авто с нанесенной пленкой светопропускаемость которой ниже 50% {B4452D} [Штраф: 25.000]\n{FFFFFF} 15.1. Непредоставление преимущества в движении маршрутному транспортному средству. {B4452D} [Штраф: 15.000, а так же лишение лицензии на управление ТС]\n{FFFFFF} 15.2. Непредоставление преимущества в движении ТС с одновременно включенными проблесковым маячком синего цвета и специальным звуковым сигналом. \n{B4452D}[Штраф: 25.000, а так же лишение лицензии на управление ТС]\n{FFFFFF} 17.1. Потребление наркотических средств или психотропных веществ без назначения врача либо новых потенциально опасных псих-активных веществ\n{FFFFFF} за исключением случаев, случаев указанных в УК {B4452D} [Штраф: 25.000 - 30.000]\n{FFFFFF} 18.5. Неповиновение законному распоряжению сотрудника полиции. {B4452D} [Штраф: 25.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap19.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 19', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap20()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 20', u8:decode' \n \n{FFFFFF} Статья 4.1 Водители транспортного средства с маячком синего или красного цвета и включенной сиреной могут отступать от требований Дорожного кодекса\n{FFFFFF} при условии обеспечения безопасности движения и нанесении минимального урона окружению {B4452D} [Штраф: 5.000]\n{FFFFFF} Статья 6.3 Двигаться по полосе встречного движения. {B4452D} [Штраф: 5.000]\n{FFFFFF} Статья 6.1.5 Двигаться на красный сигнал светофора. {B4452D} [Штраф: 5.000]\n{FFFFFF} Статья 6.1.7 Двигаться тротуарам, газонам и прочим местам, неположенным для движения. {B4452D} [Штраф: 5.000]\n{FFFFFF} Статья 6.1.8 Агрессивное вождение, которое может привести ДТП. {B4452D} [Штраф: 10.000, изъятие лицензии на вождение.]\n{FFFFFF} Статья 6.3. Водителю запрещено пересекать и занимать место в организованных колоннах или кортежах. {B4452D} [Штраф: 10.000]\n{FFFFFF} Статья 6.4. Водителю запрещено совершать опасное вождение, которое выражается в:\n{fbec5d} - невыполнение требования уступить дорогу во время перестроения (подрезание);\n{fbec5d} - несоблюдении безопасной дистанции;\n{fbec5d} - резком торможении, если такое торможение не требуется для предотвращения аварии;\n{fbec5d} - препятствовании обгону;\n{fbec5d} - нарушении сразу двух и более статей Дорожного кодекса.\n{B4452D} [Штраф: 10.000]\n{FFFFFF} Статья 7.1 Водителю запрещено движение на ТС в неисправном состоянии. {B4452D} [Штраф: 3.000, повторно 6.000]\n{FFFFFF} Статья 7.2 Водителю запрещено движение на ТС без включенного света фар в ночное время суток, с 21:00 до 6:00. {B4452D} [Штраф: 3.000, повторно 6.000]\n{FFFFFF} Статья 7.3 Водителю запрещено движение на ТС без регистрационного знака. {B4452D} [Штраф: 10.000, повторно изъятие лицензии на вождение.]\n{fbec5d} Примечание: Действует на ТС с пробегом более 100 километров.\n{FFFFFF} Статья 7.4 Водителю запрещено движение на ТС без пристёгнутого ремня безопасности. {B4452D} [Штраф: 5.000]\n{FFFFFF} Статья 7.5 Водителю запрещено движение на мототранспорте без надетого защитного шлема. {B4452D} [Штраф: 5.000]\n{FFFFFF} Статья 7.6 Водителю запрещено движение на ТС, лобовое и передние боковые стекла которого имеют степень светопропускания менее 70%. {B4452D} [Штраф: 5.000]\n{fbec5d} Примечание: Проверка светопропускания проводится тауметром, другие способы проверки запрещены.\n{FFFFFF} Статья 9.3 Остановка запрещается:\n{fbec5d} - на пешеходных переходах и тротуарах;\n{fbec5d} - на остановках общественного транспорта;\n{fbec5d} - на ж/д переездах, мостах;\n{fbec5d} - в тоннелях;\n{fbec5d} - на траве, газонах;\n{fbec5d} - на перекрестках;\n{fbec5d} - на служебных стоянках государственных учреждений.\n{B4452D} [Штраф: 5.000, эвакуация транспортного средства.]\n{fbec5d} Исключение: транспортные средства, прибывающие с целью выгрузки товара.\n{FFFFFF} Статья 9.5 Парковка транспортного средства на частной территории другого гражданина. {B4452D} [Штраф: 5.000, эвакуация транспортного средства.]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap20.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 20', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function koap21()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 21', u8:decode' \n \n{FFFFFF} 2.1 За езду по встречной полосе {B4452D} [Штраф: 15.000, а так же лишение лицензии на управление Т/С.\n{FFFFFF} 2.3 За разворот через сплошную линию {B4452D} [Штраф: 10.000, а так же лишение лицензии на управление Т/С.\n{FFFFFF} 3.1 За проезд на красный сигнала светофора {B4452D} [Штраф: 5.000]\n{FFFFFF} 4.1 За парковку Т/С в неположенном месте {B4452D} [Штраф: 15.000]\n{FFFFFF} 5.1 За движение Т/С по тротуару, газону, пешеходным дорожкам и прочих не проезжей части дорог {B4452D} [Штраф: 10.000]\n{FFFFFF} 6.1 За игнорирование сирен спец. служб {B4452D} [Штраф: 5.000]\n{FFFFFF} 7.2 За езду на Т/С в неисправном состоянии {B4452D} [Штраф: 8.000]\n{fbec5d} (неисправное состояние - это когда машина дымится и движется без аварийных сигналов)\n{FFFFFF} 8.1 Передвижение на Т/С без регистрационного знака {B4452D} [Штраф: 10.000]\n{fbec5d} *Примечание: номерной знак должен быть установлен в течение 7 дней с момента приобретения Т/С.\n{FFFFFF} 8.2 За не пристегнутый ремень безопасности во время движения на Т/С {B4452D} [Штраф: 2.000]\n{FFFFFF} 8.3 За езду без шлема {B4452D} [Штраф: 2.000]\n{FFFFFF} 8.4. За езду с выключенными фарами {B4452D} [Штраф: 5.000]\n{FFFFFF} 9.1 За агрессивное поведение на дороге, находясь в Т/С на водительском месте{B4452D} [Штраф: 10.000 и лишение лицензии на управление Т/С.\n{FFFFFF} 10.1 За управление транспортным средством с лобовым стеклом, светопропускание которого ниже 75% {B4452D} [Штраф: 7.000]\n{FFFFFF} 10.2 За управление транспортным средством с передними боковыми стеклами, светопропускание которых ниже 70% {B4452D} [Штраф: 7.000]\n{FFFFFF} 11.1 За использование летних шин в зимний период [с 1 декабря по 28 (29) февраля] {B4452D} [Штраф: 5.000]\n{FFFFFF} 12.1 В случае лишения водителя лицензий на управление Т/С за нарушение одного из пунктов КоАП, автомобиль\n{FFFFFF} на котором передвигался нарушитель, после составления протокола подлежит доставке на штрафстоянку.\n{FFFFFF} 13.1 За использование ненормативной лексики {B4452D} [Штраф: 3.000]\n{FFFFFF} 13.2 За оскорбление граждан {B4452D} [Штраф: 15.000]\n{FFFFFF} 13.3 За оскорбление сотрудника МВД при исполнении {B4452D} [Штраф: 20.000]\n', u8:decode'Закрыть')
-    end)
+        local file = io.open(getWorkingDirectory() .. '\\sounds\\koap21.txt', 'r')
+        local contents = file:read('*a')
+        file:close()
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}КоАП 21', u8:decode(contents), u8:decode'Закрыть', nil)
+    end) -- Тут наш поток умирает :(
 end
 
 function theme()
@@ -1559,4 +1816,5 @@ end
 
 imgui.OnInitialize(function()
     theme()
+    imgui.GetIO().IniFilename = nil
 end)
