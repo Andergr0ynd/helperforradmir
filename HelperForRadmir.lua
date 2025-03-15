@@ -17,8 +17,8 @@ local socket_url = require'socket.url' -- Для кодирования URL
 local vkeys = require 'vkeys'
 local hotkey = require 'mimgui_hotkeys'
 
-local script_version = "2.501"
-local update_time = "12.03.2025 17:30"
+local script_version = "2.502"
+local update_time = "15.03.2025 11:40"
 
 local tab = 1
 local WinState = new.bool()
