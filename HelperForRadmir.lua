@@ -383,7 +383,7 @@ end
     if imgui.Button('Наш Boosty', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
     os.execute("start https://boosty.to/andergr0ynd")
         end
-    if imgui.Button('Перезагрузать AHK', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button('Перезагрузить AHK', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
     thisScript():reload()
         end
     end
