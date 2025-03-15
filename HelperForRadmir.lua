@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.501")
+script_version("v2.502")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -26,7 +26,7 @@ local WinState = new.bool()
 local msm = ''
 local act = false
 local needStop = false
-local needOpen = true
+local needOpen = false
 
 local enable_autoupdate = true
 local autoupdate_loaded = false
@@ -210,6 +210,7 @@ local settings = ini.load({
 local sw, sh = getScreenResolution()
 local mainWindow = imgui.new.bool(true)
 local HotkeyCFGMsm
+local HotkeyCFGMenu
 
 local inputname = new.char[256](u8(settings.player.name))
 local inputtag = new.char[256](u8(settings.player.tag))
@@ -298,6 +299,11 @@ end
     settings.hotkey_cfg.bind = encodeJson(HotkeyCFGMsm:GetHotKey()) -- заносим в конфиг изменённую пользователем комбинацию клавиш
     ini.save(settings, 'MVDHelper.ini') -- не забываем конфиг сохранить
 end
+    imgui.Text('Открытие меню')
+    if HotkeyCFGMenu:ShowHotKey() then -- создаем условие, которое будет срабатывать при обновлении бинда пользователем
+    settings.hotkey_cfg.bind2 = encodeJson(HotkeyCFGMenu:GetHotKey()) -- заносим в конфиг изменённую пользователем комбинацию клавиш
+    ini.save(settings, 'MVDHelper.ini') -- не забываем конфиг сохранить
+end
     elseif tab == 2 then
     imgui.Text('Настройка для отыгровок')
     imgui.Separator() -- Разделяющая полоса
@@ -377,6 +383,9 @@ end
     if imgui.Button('Наш Boosty', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
     os.execute("start https://boosty.to/andergr0ynd")
         end
+    if imgui.Button('Перезагрузать AHK', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
+    thisScript():reload()
+        end
     end
 end
     imgui.End()
@@ -420,6 +429,16 @@ function isAvailableUser(users, name)
 end
 
 site = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/users.txt'
+
+function isKeyCheckAvailable()
+if not isSampLoaded() then
+return true
+end
+if not isSampfuncsLoaded() then
+return not sampIsChatInputActive() and not sampIsDialogActive()
+end
+return not sampIsChatInputActive() and not sampIsDialogActive() and not isSampfuncsConsoleActive()
+end
 
 function main()
     while not isSampAvailable() do wait(0) end
@@ -520,9 +539,14 @@ end
     table.insert(sound_streams, stream)
     end
 end
+    lua_thread.create(function()
+    HotkeyCFGMenu = hotkey.RegisterHotKey('Hotkey CFG Menu', false, decodeJson(settings.hotkey_cfg.bind2), function()
+        needOpen = true -- Устанавливаем флаг при нажатии клавиши
+    end)
 while true do
     wait(0)
-    if isKeyDown(VK_F3) then 
+    if needOpen then
+    needOpen = false
     sampShowDialog(6405, u8:decode"{006AFF}MVD Helper", u8:decode"\n \n 1 [MVD] Оследить преступника \n 2 [MVD] Представиться (Омон) \n 3 [MVD] Представиться \n 4 [MVD] Взял документы \n 5 [MVD] Взяь документы (В случае если отказывается) \n 6 [MVD] Надеть наручники \n 7 [MVD] Повести за собой \n 8 [MVD] Посадить преступника в авто \n 9 [MVD] Снять наручники \n 10 [MVD] Не вести за собой \n 11 [MVD] Высадить игрока из авто \n 12 [MVD] Посадить преступника в КПЗ \n 13 [MVD] Объявить преступника в розыск \n 14 [MVD] Выписать штраф \n 15 [MVD] Изъять права у нарушителя \n 16 [MVD] Изъять лицензию на оружие у нарушителя \n 17 [MVD] Вытащить из авто силой \n 18 [MVD] Мегафон \n 19 [MVD] Начать погоню \n 20 [MVD] Провести обыск \n 21 [MVD] Миранда \n 22 [MVD] Пробить по базе \n 23 [MVD] Эвакуатор \n \n", u8:decode("Закрыть"), nil, 2)
     while sampIsDialogActive(6405) do wait(100) end
     local _, button, list, _ = sampHasDialogRespond(6405)
@@ -1016,6 +1040,7 @@ end
                     end
                 end
             end
+        end)
     while not isSampAvailable() do
     wait(100)
     end
