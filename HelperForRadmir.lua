@@ -18,7 +18,7 @@ local vkeys = require 'vkeys'
 local hotkey = require 'mimgui_hotkeys'
 
 local script_version = "2.502"
-local update_time = "15.03.2025 11:40"
+local update_time = "15.03.2025 11:50"
 
 local tab = 1
 local WinState = new.bool()
