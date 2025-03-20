@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.502")
+script_version("v2.6")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -16,9 +16,10 @@ local new, str = imgui.new, ffi.string
 local socket_url = require'socket.url' -- Для кодирования URL
 local vkeys = require 'vkeys'
 local hotkey = require 'mimgui_hotkeys'
+local faicons = require("fAwesome6")
 
-local script_version = "2.502"
-local update_time = "15.03.2025 11:50"
+local script_version = "2.6"
+local update_time = "20.03.2025 9:00"
 
 local tab = 1
 local WinState = new.bool()
@@ -152,6 +153,10 @@ local sounds = {
         url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap21.txt',
         file_name = 'koap21.txt',
     },
+    {
+        url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/logo.png',
+        file_name = 'logo.png',
+    },
 }
 
 local as_action = require('moonloader').audiostream_state
@@ -203,7 +208,7 @@ local settings = ini.load({
     },
     hotkey_cfg = {
         bind = '[]',
-        bind2 = '[]',
+        bind2 = '[120]',
     },
 }, 'MVDHelper.ini')
 
@@ -253,17 +258,18 @@ imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowSize(imgui.ImVec2(525, 265), imgui.Cond.Always)
     imgui.Begin('MVDHelper | Settings', WinState, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
     if imgui.BeginChild('Menu', imgui.ImVec2(151, 231), true) then
-    if imgui.Button('Главная') then tab = 1 end
-    if imgui.Button('Настройки') then tab = 2 end
-    if imgui.Button('Команды') then tab = 3 end
-    if imgui.Button('Информация') then tab = 4 end
+    imgui.Image(imhandle, imgui.ImVec2(125, 60)) -- эта функция рендерит саму картинку
+    if imgui.Button(faicons('house') .. ' Главная', imgui.ImVec2(145, 30)) then tab = 1 end
+    if imgui.Button(faicons('list') .. ' Настройки', imgui.ImVec2(145, 30)) then tab = 2 end
+    if imgui.Button(faicons('book') .. ' Команды', imgui.ImVec2(145, 30)) then tab = 3 end
+    if imgui.Button(faicons('feather') .. ' Информация', imgui.ImVec2(145, 30)) then tab = 4 end
     imgui.EndChild()
 end
     imgui.SameLine()
     if imgui.BeginChild('Function', imgui.ImVec2(380, 230), true) then
     if tab == 1 then
 	imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Изменить команду | Настройки', u8'Menu', menu, 12) then end
-	if imgui.Button('Сохранить команду', imgui.ImVec2(137, 30)) then
+	if imgui.Button(faicons('FLOPPY_DISK') ..' Сохранить команду', imgui.ImVec2(145, 30)) then
     settings.othersettings.menu = u8:decode(str(menu))
     ini.save(settings, 'MVDHelper.ini')
     thisScript():reload()
@@ -275,7 +281,7 @@ end
 	settings.othersettings.volume = volume[0]
 	ini.save(settings, 'MVDHelper.ini')
 end
-	if imgui.Button('Проверка звука', imgui.ImVec2(137, 30)) then
+	if imgui.Button(faicons('volume') ..' Проверка звука', imgui.ImVec2(137, 30)) then
 	playRandomSound()
 end
     if imgui.Checkbox('Включить звук', musicsettings) then
@@ -311,7 +317,7 @@ end
 	imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Тэг', 'С', inputtag, 256) then end
     imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Звание', 'Сержант', inputrang, 256) then end
     imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Отдел', 'ДПС/ППС/ОМОН', inputdepartment, 256) then end
-    if imgui.Button('Сохранить настройки', imgui.ImVec2(137, 30)) then
+    if imgui.Button(faicons('FLOPPY_DISK') ..' Сохранить настройки', imgui.ImVec2(155, 30)) then
 	settings.player.name = u8:decode(str(inputname))
 	settings.player.tag = u8:decode(str(inputtag))
     settings.player.rang = u8:decode(str(inputrang))
@@ -345,7 +351,7 @@ end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /miranda', 'Команду', castommiranda, 12) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /photo', 'Команду', castomphoto, 12) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /mcheckdocs', 'Команду', castommcheckdocs, 12) then end
-    if imgui.Button('Сохранить настройки', imgui.ImVec2(137, 30)) then
+    if imgui.Button(faicons('FLOPPY_DISK') ..' Сохранить настройки', imgui.ImVec2(155, 30)) then
     settings.dop.castom_mhelp = u8:decode(str(castommhelp))
     settings.dop.castom_msm = u8:decode(str(castommsm))
     settings.dop.castom_mdoc = u8:decode(str(castommdoc))
@@ -377,13 +383,13 @@ end
     elseif tab == 4 then
     imgui.Text('Версия AHK: ' ..script_version)
     imgui.Text('Последнее обновление: ' ..update_time)
-    if imgui.Button('Наш Discord', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button(faicons('eject') .. ' Наш Discord', imgui.ImVec2(145, 30)) then -- размер указал потомучто так привычней
     os.execute("start https://discord.gg/5KDB5Nww3b")
 end
-    if imgui.Button('Наш Boosty', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button(faicons('eject') .. ' Наш Boosty', imgui.ImVec2(145, 30)) then -- размер указал потомучто так привычней
     os.execute("start https://boosty.to/andergr0ynd")
         end
-    if imgui.Button('Перезагрузить AHK', imgui.ImVec2(137, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button(faicons('rotate') .. ' Перезагрузить AHK', imgui.ImVec2(145, 30)) then -- размер указал потомучто так привычней
     thisScript():reload()
         end
     end
@@ -430,14 +436,78 @@ end
 
 site = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/users.txt'
 
-function isKeyCheckAvailable()
-if not isSampLoaded() then
-return true
+local notifyPool = {}
+local duration = 15
+local quitReasons = {
+    [0] = u8:decode"Краш / Тайм-аут",
+    [1] = u8:decode"Вышел c сервера",
+    [2] = u8:decode"Кикнут сервером"
+}
+
+function sampev.onPlayerQuit(playerId, reason)
+    local result, playerChar = sampGetCharHandleBySampPlayerId(playerId)
+    if not result then
+        return nil
+    end
+
+    local px, py, pz = getCharCoordinates(playerChar)
+    local mx, my, mz = getCharCoordinates(PLAYER_PED)
+
+    if getDistanceBetweenCoords3d(px, py, pz, mx, my, mz) <= 50 then
+        local nickname = sampGetPlayerNickname(playerId)
+        local notifyMessage = table.concat({
+            (u8:decode"Игрок %s(%d) покинул игру"):format(nickname, playerId),
+            u8:decode"",
+            quitReasons[reason] or u8:decode"Неизвестная причина",
+            (u8:decode"Время: %s"):format(os.date("%H:%M:%S"))
+        }, "\n")
+
+        createQuitNotify(px, py, pz, notifyMessage)
+    end
 end
-if not isSampfuncsLoaded() then
-return not sampIsChatInputActive() and not sampIsDialogActive()
+
+function sampev.onCreate3DText(id, ...)
+    if notifyPool[id] ~= nil then
+        notifyPool[id] = nil
+    end
 end
-return not sampIsChatInputActive() and not sampIsDialogActive() and not isSampfuncsConsoleActive()
+
+function sampev.onRemove3DTextLabel(id)
+    if notifyPool[id] ~= nil then
+        return false
+    end
+end
+
+function createQuitNotify(x, y, z, text)
+    local id = sampCreate3dText(text, 0xAAFFFFFF, x, y, z, 25, false, -1, -1)
+    notifyPool[id] = os.clock() + duration
+
+    lua_thread.create(function()
+        while notifyPool[id] and os.clock() < notifyPool[id] do
+            wait(0)
+        end
+        removeQuitNotify(id)
+    end)
+end
+
+function removeQuitNotify(id)
+    if notifyPool[id] == nil then
+        return nil
+    end
+
+    if sampIs3dTextDefined(id) then
+        sampDestroy3dText(id)
+    end
+
+    notifyPool[id] = nil
+end
+
+function onScriptTerminate(script, isQuit)
+    if script == thisScript() then
+        for id, time in pairs(notifyPool) do
+            removeQuitNotify(id)
+        end
+    end
 end
 
 function main()
@@ -458,7 +528,7 @@ end
     end
     sampAddChatMessage(tag .. u8:decode'Все файлы успешно загружены и готовы к игре..', -1)
     sampAddChatMessage(tag .. u8:decode'Вы используете{FFFFFF} Helper For Radmir {969854}| {fff000} Radmir RP', -1)
-    sampAddChatMessage(tag .. u8:decode'Используйте /mhelp или меню на F3', -1)
+    sampAddChatMessage(tag .. u8:decode'Используйте /'..settings.dop.castom_mhelp.. u8:decode' или меню на F9', -1)
 
     sampRegisterChatCommand(settings.dop.castom_mhelp, mhelp) 
     sampRegisterChatCommand(settings.dop.castom_msm, msm) 
@@ -531,7 +601,7 @@ end
 end
     for i, v in ipairs(sounds) do
     if not doesFileExist(getWorkingDirectory()..'\\sounds\\'..v['file_name']) then
-    sampAddChatMessage(u8:decode'Загружаю: ' .. v['file_name'], -1)
+    print(u8:decode'Загружаю: ' .. v['file_name'], -1)
     downloadUrlToFile(v['url'], getWorkingDirectory()..'\\sounds\\'..v['file_name'])
 end
     local stream = loadAudioStream(getWorkingDirectory()..'\\sounds\\'..v['file_name'])
@@ -1069,7 +1139,7 @@ end
 function mhelp()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}/mhelp - Список команд \n /omondoc - Представиться (Омон) \n /koap1 - /koap21 - КоАП серверов \n {fe0000}(Примечание. У /koap7 есть вторая страница /koap7_2)\n {FFFFFF}/msm - Начать/Закончить слежку \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск \n {fe0000}Необходима опра на снятие \n {FFFFFF}/msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}/mhelp - Список команд \n /mcheckdocs - В случае отказана показать документы \n /omondoc - Представиться (Омон) \n /koap1 - /koap21 - КоАП серверов \n {fe0000}(Примечание. У /koap7 есть вторая страница /koap7_2)\n {FFFFFF}/msm - Начать/Закончить слежку \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск \n {fe0000}Необходима опра на снятие \n {FFFFFF}/msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
     end)
 end
 
@@ -1842,4 +1912,12 @@ end
 imgui.OnInitialize(function()
     theme()
     imgui.GetIO().IniFilename = nil
+    local config = imgui.ImFontConfig()
+    config.MergeMode = true
+    config.PixelSnapH = true
+    iconRanges = imgui.new.ImWchar[3](faicons.min_range, faicons.max_range, 0)
+    imgui.GetIO().Fonts:AddFontFromMemoryCompressedBase85TTF(faicons.get_font_data_base85('solid'), 14, config, iconRanges)
+    if doesFileExist(getWorkingDirectory()..'\\sounds\\logo.png') then -- находим необходимую картинку с названием example.png в папке moonloader/resource/
+        imhandle = imgui.CreateTextureFromFile(getWorkingDirectory() .. '\\sounds\\logo.png') -- если найдена, то записываем в переменную хендл картинки
+    end
 end)
