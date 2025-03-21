@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.7")
+script_version("v2.601")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
