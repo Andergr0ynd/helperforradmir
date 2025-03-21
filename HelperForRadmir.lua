@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.601")
+script_version("v2.602")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -13,13 +13,13 @@ local new = imgui.new
 local ffi = require 'ffi'
 local ev = require 'samp.events'
 local new, str = imgui.new, ffi.string
-local socket_url = require'socket.url' -- Для кодирования URL
+local socket_url = require'socket.url'
 local vkeys = require 'vkeys'
 local hotkey = require 'mimgui_hotkeys'
 local faicons = require("fAwesome6")
 
-local script_version = "2.6"
-local update_time = "20.03.2025 9:00"
+local script_version = "2.602"
+local update_time = "21.03.2025 17:10"
 
 local tab = 1
 local WinState = new.bool()
@@ -184,7 +184,6 @@ local sounds = {
 }
 
 local as_action = require('moonloader').audiostream_state
-local sampev = require 'lib.samp.events'
 
 local sound_streams = {}
 
@@ -234,12 +233,20 @@ local settings = ini.load({
         bind = '[]',
         bind2 = '[120]',
     },
+    color = {
+        theme = '2',
+    },
 }, 'MVDHelper.ini')
 
 local sw, sh = getScreenResolution()
 local mainWindow = imgui.new.bool(true)
 local HotkeyCFGMsm
 local HotkeyCFGMenu
+
+local colorList = {'Красная', 'Зелёная','Синяя', 'Бирюзовый', 'Фиолетовая', 'Белая', 'Черная'}
+local colorListNumber = new.int(tonumber(settings.color.theme) or 0)
+local colorListBuffer = new['const char*'][#colorList](colorList)
+local sliderBuf = new.int()
 
 local inputname = new.char[256](u8(settings.player.name))
 local inputtag = new.char[256](u8(settings.player.tag))
@@ -282,11 +289,11 @@ imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowSize(imgui.ImVec2(525, 265), imgui.Cond.Always)
     imgui.Begin('MVDHelper | Settings', WinState, imgui.WindowFlags.NoResize + imgui.WindowFlags.NoCollapse)
     if imgui.BeginChild('Menu', imgui.ImVec2(151, 231), true) then
-    imgui.Image(imhandle, imgui.ImVec2(125, 60)) -- эта функция рендерит саму картинку
+    imgui.Image(imhandle, imgui.ImVec2(125, 60))
     if imgui.Button(faicons('house') .. ' Главная', imgui.ImVec2(145, 30)) then tab = 1 end
     if imgui.Button(faicons('list') .. ' Настройки', imgui.ImVec2(145, 30)) then tab = 2 end
     if imgui.Button(faicons('book') .. ' Команды', imgui.ImVec2(145, 30)) then tab = 3 end
-    if imgui.Button(faicons('feather') .. ' Информация', imgui.ImVec2(145, 30)) then tab = 4 end
+    if imgui.Button(faicons('feather') .. ' Дополнительно', imgui.ImVec2(145, 30)) then tab = 4 end
     imgui.EndChild()
 end
     imgui.SameLine()
@@ -325,18 +332,18 @@ end
 end
     imgui.Separator()
     imgui.Text('Остановка /msm')
-    if HotkeyCFGMsm:ShowHotKey() then -- создаем условие, которое будет срабатывать при обновлении бинда пользователем
-    settings.hotkey_cfg.bind = encodeJson(HotkeyCFGMsm:GetHotKey()) -- заносим в конфиг изменённую пользователем комбинацию клавиш
-    ini.save(settings, 'MVDHelper.ini') -- не забываем конфиг сохранить
+    if HotkeyCFGMsm:ShowHotKey() then
+    settings.hotkey_cfg.bind = encodeJson(HotkeyCFGMsm:GetHotKey())
+    ini.save(settings, 'MVDHelper.ini')
 end
     imgui.Text('Открытие меню')
-    if HotkeyCFGMenu:ShowHotKey() then -- создаем условие, которое будет срабатывать при обновлении бинда пользователем
-    settings.hotkey_cfg.bind2 = encodeJson(HotkeyCFGMenu:GetHotKey()) -- заносим в конфиг изменённую пользователем комбинацию клавиш
-    ini.save(settings, 'MVDHelper.ini') -- не забываем конфиг сохранить
+    if HotkeyCFGMenu:ShowHotKey() then
+    settings.hotkey_cfg.bind2 = encodeJson(HotkeyCFGMenu:GetHotKey())
+    ini.save(settings, 'MVDHelper.ini')
 end
     elseif tab == 2 then
     imgui.Text('Настройка для отыгровок')
-    imgui.Separator() -- Разделяющая полоса
+    imgui.Separator()
 	imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Nick_Name', 'Имя Фамилия/Позывной', inputname, 256) then end
 	imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Тэг', 'С', inputtag, 256) then end
     imgui.SetNextItemWidth(234)if imgui.InputTextWithHint('Звание', 'Сержант', inputrang, 256) then end
@@ -407,14 +414,19 @@ end
     elseif tab == 4 then
     imgui.Text('Версия AHK: ' ..script_version)
     imgui.Text('Последнее обновление: ' ..update_time)
-    if imgui.Button(faicons('eject') .. ' Наш Discord', imgui.ImVec2(145, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button(faicons('eject') .. ' Наш Discord', imgui.ImVec2(145, 30)) then
     os.execute("start https://discord.gg/5KDB5Nww3b")
 end
-    if imgui.Button(faicons('eject') .. ' Наш Boosty', imgui.ImVec2(145, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button(faicons('eject') .. ' Наш Boosty', imgui.ImVec2(145, 30)) then
     os.execute("start https://boosty.to/andergr0ynd")
         end
-    if imgui.Button(faicons('rotate') .. ' Перезагрузить AHK', imgui.ImVec2(145, 30)) then -- размер указал потомучто так привычней
+    if imgui.Button(faicons('rotate') .. ' Перезагрузить AHK', imgui.ImVec2(145, 30)) then
     thisScript():reload()
+        end
+    if imgui.Combo(faicons('palette') ..' Темы',colorListNumber,colorListBuffer, #colorList) then
+    theme[colorListNumber[0]+1].change()
+    settings.color.theme = tostring(colorListNumber[0])
+    ini.save(settings, 'MVDHelper')
         end
     end
 end
@@ -468,7 +480,7 @@ local quitReasons = {
     [2] = u8:decode"Кикнут сервером"
 }
 
-function sampev.onPlayerQuit(playerId, reason)
+function ev.onPlayerQuit(playerId, reason)
     local result, playerChar = sampGetCharHandleBySampPlayerId(playerId)
     if not result then
         return nil
@@ -490,13 +502,13 @@ function sampev.onPlayerQuit(playerId, reason)
     end
 end
 
-function sampev.onCreate3DText(id, ...)
+function ev.onCreate3DText(id, ...)
     if notifyPool[id] ~= nil then
         notifyPool[id] = nil
     end
 end
 
-function sampev.onRemove3DTextLabel(id)
+function ev.onRemove3DTextLabel(id)
     if notifyPool[id] ~= nil then
         return false
     end
@@ -604,17 +616,17 @@ end
     sampRegisterChatCommand(settings.othersettings.menu, function() WinState[0] = not WinState[0] end)
     lua_thread.create(function()
     HotkeyCFGMsm = hotkey.RegisterHotKey('Hotkey CFG MSM', false, decodeJson(settings.hotkey_cfg.bind), function()
-        needStop = true -- Устанавливаем флаг при нажатии клавиши
+        needStop = true
     end)
     while true do
         wait(0)
         if needStop then
-            needStop = false -- Сбрасываем флаг
+            needStop = false 
             if act then
                 act = false
                 sampAddChatMessage(tag.. u8:decode'{006AFF}MVD Helper: {FFFFFF}Слежка остановлена!', -1)
             end
-            wait(500) -- Можно использовать wait здесь, так как это в основном потоке
+            wait(500)
         end
     end
 end)
@@ -635,7 +647,7 @@ end
 end
     lua_thread.create(function()
     HotkeyCFGMenu = hotkey.RegisterHotKey('Hotkey CFG Menu', false, decodeJson(settings.hotkey_cfg.bind2), function()
-        needOpen = true -- Устанавливаем флаг при нажатии клавиши
+        needOpen = true
     end)
 while true do
     wait(0)
@@ -1130,6 +1142,8 @@ end
     wait(1500)
     sampSendChat('/attach')
     wait(1000)
+    sampSendChat(u8:decode'/r ['..settings.player.tag.. u8:decode'] Докладывает: '..settings.player.rang..' '..settings.player.name.. u8:decode'. Начиная эвакуацию ТС на ШС.')
+    wait(1000)
     sampSendChat('/c 060')
                     end
                 end
@@ -1151,19 +1165,21 @@ function playRandomSound()
     end
 end
 
-function sampev.onServerMessage(color, text)
+function ev.onServerMessage(color, text)
     if settings.othersettings.music then
     if text:find(u8:decode'(%w+_%w+) был доставлен в тюрьму для отбывания наказания') then
         playRandomSound()
         end
     end
+    if text:find(u8:decode'Транспорт отправлен на штрафстоянку') then
+    sampSendChat(u8:decode'/r ['..settings.player.tag.. u8:decode'] Докладывает: '..settings.player.rang..' '..settings.player.name.. u8:decode'. Доставил ТС на ШС.')
+    end
 end
-
 
 function mhelp()
     lua_thread.create(function()
         wait(100)
-        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}/mhelp - Список команд \n /mcheckdocs - В случае отказана показать документы \n /omondoc - Представиться (Омон) \n /koap1 - /koap21 - КоАП серверов \n {fe0000}(Примечание. У /koap7 есть вторая страница /koap7_2)\n {FFFFFF}/msm - Начать/Закончить слежку \n /mdoc - Показать удостоверение \n /mdoc1 - Попросить документы \n /mdoc2 - Проверка документов \n /mdoc3 - При успешной проверке документов | Отпустить \n /mdoc4 - Проверка документов на транспорт \n /mdoc5 - В случае если человек в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск \n {fe0000}Необходима опра на снятие \n {FFFFFF}/msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
+        sampShowDialog(1, u8:decode'{006AFF}MVD Helper: {FFFFFF}Список команд', u8:decode' \n {FFFFFF}ALT + R - Перезагрузка | Либо через меню /mvd \n /mcheckdocs - В случае отказана показать документы \n {fe0000}(Человек должен находится в наручниках)\n {FFFFFF}/omondoc - Представиться (Омон) \n /koap1 - /koap21 - КоАП серверов \n {fe0000}(Примечание. У /koap7 есть вторая страница /koap7_2)\n {FFFFFF}/msm - Начать/Закончить слежку \n /mdoc - Представится \n /mdoc1 - Попросить документы для проверки \n /mdoc2 - Проверка документов (RP Отыгровка) \n /mdoc3 - Отпустить после проверки \n /mdoc4 - Проверка документов на ТС (RP Отыгровка) \n /mdoc5 - Если игрок находится в розыске \n /msearch - Провести обыск \n /mcuff - Надеть наручники \n /muncuff - Снять наручники \n /mclear - Снять розыск \n {fe0000}(Примечание: Необходима опра на снятие) \n {FFFFFF}/msu - Выдать звёзды \n /marrest - Арестовать преступника \n /mpg - Начать погоню \n /mtakelic - Забрать лицензии \n /mputpl - Посадить преступника в машину \n /mticket - Выдать штраф \n /mescort - Повести преступника за собой \n /mbreak_door - Выбить дверь \n /mattach - Эвакуировать транспорт на ШС \n', u8:decode'Закрыть')
     end)
 end
 
@@ -1563,6 +1579,8 @@ function mattach()
     wait(1500)
     sampSendChat('/attach')
     wait(1000)
+    sampSendChat(u8:decode'/r ['..settings.player.tag.. u8:decode'] Докладывает: '..settings.player.rang..' '..settings.player.name.. u8:decode'. Начиная эвакуацию ТС на ШС.')
+    wait(1000)
     sampSendChat('/c 060')
         end)
     end
@@ -1858,90 +1876,296 @@ function koap21()
     end) -- Тут наш поток умирает :(
 end
 
-function theme()
-imgui.SwitchContext()
-local ImVec4 = imgui.ImVec4
-imgui.GetStyle().WindowPadding = imgui.ImVec2(5, 5)
-imgui.GetStyle().FramePadding = imgui.ImVec2(5, 5)
-imgui.GetStyle().ItemSpacing = imgui.ImVec2(5, 5)
-imgui.GetStyle().ItemInnerSpacing = imgui.ImVec2(2, 2)
-imgui.GetStyle().TouchExtraPadding = imgui.ImVec2(0, 0)
-imgui.GetStyle().IndentSpacing = 0
-imgui.GetStyle().ScrollbarSize = 10
-imgui.GetStyle().GrabMinSize = 10
-imgui.GetStyle().WindowBorderSize = 1
-imgui.GetStyle().ChildBorderSize = 1
+theme = {
+    {
+change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.10, 0.00, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.50, 0.10, 0.10, 0.54)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.80, 0.20, 0.20, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.90, 0.25, 0.25, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.20, 0.00, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.60, 0.10, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgCollapsed]       = ImVec4(0.30, 0.00, 0.00, 0.51)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.90, 0.10, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.80, 0.15, 0.15, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.90, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.80, 0.15, 0.15, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.90, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(1.00, 0.25, 0.25, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.80, 0.15, 0.15, 0.31)
+    imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.90, 0.20, 0.20, 0.80)
+    imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(1.00, 0.25, 0.25, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.60, 0.10, 0.10, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.SeparatorHovered]       = ImVec4(0.90, 0.20, 0.20, 0.78)
+    imgui.GetStyle().Colors[imgui.Col.SeparatorActive]        = ImVec4(1.00, 0.25, 0.25, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGrip]             = ImVec4(0.80, 0.15, 0.15, 0.25)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripHovered]      = ImVec4(0.90, 0.20, 0.20, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripActive]       = ImVec4(1.00, 0.25, 0.25, 0.95)
+    imgui.GetStyle().Colors[imgui.Col.TextSelectedBg]         = ImVec4(0.90, 0.20, 0.20, 0.35)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(0.60, 0.60, 0.60, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ChildBg]                = ImVec4(0.15, 0.00, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.20, 0.00, 0.00, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(0.60, 0.10, 0.10, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.BorderShadow]           = ImVec4(0.00, 0.00, 0.00, 0.00)
+    imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = ImVec4(0.30, 0.00, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = ImVec4(0.10, 0.00, 0.00, 0.53)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = ImVec4(0.50, 0.10, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = ImVec4(0.60, 0.10, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = ImVec4(0.70, 0.10, 0.10, 1.00)
+end
+    },
+    {
+    change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.10, 0.30, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.20, 0.60, 0.20, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.30, 0.80, 0.30, 0.60)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.35, 0.90, 0.35, 0.80)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.05, 0.20, 0.05, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.20, 0.60, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.25, 0.80, 0.25, 0.60)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.30, 0.90, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.35, 1.00, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.30, 0.90, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.25, 0.80, 0.25, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.30, 0.90, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.20, 0.60, 0.20, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.30, 0.80, 0.30, 0.90)
+    imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(0.35, 0.90, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(0.70, 0.80, 0.70, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.40, 0.70, 0.40, 0.60)
+    imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(0.40, 0.70, 0.40, 0.60)
+    imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = ImVec4(0.15, 0.50, 0.15, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = ImVec4(0.05, 0.20, 0.05, 0.60)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = ImVec4(0.30, 0.80, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = ImVec4(0.35, 0.90, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = ImVec4(0.40, 1.00, 0.40, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextSelectedBg]         = ImVec4(0.25, 0.80, 0.25, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.25, 0.80, 0.25, 0.50)
+end
+    },
+    {
+    change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.08, 0.08, 0.08, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.16, 0.29, 0.48, 0.54)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.26, 0.59, 0.98, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.26, 0.59, 0.98, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.04, 0.04, 0.04, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.16, 0.29, 0.48, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgCollapsed]       = ImVec4(0.00, 0.00, 0.00, 0.51)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.26, 0.59, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.24, 0.52, 0.88, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.26, 0.59, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.26, 0.59, 0.98, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.26, 0.59, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.06, 0.53, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.26, 0.59, 0.98, 0.31)
+    imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.26, 0.59, 0.98, 0.80)
+    imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(0.26, 0.59, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.43, 0.43, 0.50, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.SeparatorHovered]       = ImVec4(0.26, 0.59, 0.98, 0.78)
+    imgui.GetStyle().Colors[imgui.Col.SeparatorActive]        = ImVec4(0.26, 0.59, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGrip]             = ImVec4(0.26, 0.59, 0.98, 0.25)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripHovered]      = ImVec4(0.26, 0.59, 0.98, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripActive]       = ImVec4(0.26, 0.59, 0.98, 0.95)
+    imgui.GetStyle().Colors[imgui.Col.TextSelectedBg]         = ImVec4(0.26, 0.59, 0.98, 0.35)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(0.50, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.06, 0.53, 0.98, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.ChildBg]                = ImVec4(0.10, 0.10, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.06, 0.53, 0.98, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(0.43, 0.43, 0.50, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.BorderShadow]           = ImVec4(0.00, 0.00, 0.00, 0.00)
+    imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = ImVec4(0.14, 0.14, 0.14, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = ImVec4(0.02, 0.02, 0.02, 0.53)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = ImVec4(0.31, 0.31, 0.31, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = ImVec4(0.41, 0.41, 0.41, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = ImVec4(0.51, 0.51, 0.51, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotLines]              = ImVec4(0.61, 0.61, 0.61, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotLinesHovered]       = ImVec4(1.00, 0.43, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotHistogram]          = ImVec4(0.90, 0.70, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotHistogramHovered]   = ImVec4(1.00, 0.60, 0.00, 1.00)
+end
+    },
+    {
+    change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.00, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.00, 0.70, 0.70, 0.54)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.00, 0.80, 0.80, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.00, 0.90, 0.90, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.00, 0.40, 0.40, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.00, 0.60, 0.60, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.00, 0.85, 0.85, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.00, 0.75, 0.75, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.00, 0.65, 0.65, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.00, 0.80, 0.80, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.00, 0.90, 0.90, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.00, 0.70, 0.70, 0.31)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.00, 0.60, 0.60, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGrip]             = ImVec4(0.00, 0.75, 0.75, 0.25)
+    imgui.GetStyle().Colors[imgui.Col.TextSelectedBg]         = ImVec4(0.00, 0.85, 0.85, 0.35)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.00, 0.60, 0.60, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.00, 0.50, 0.50, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = ImVec4(0.00, 0.45, 0.45, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = ImVec4(0.00, 0.40, 0.40, 0.53)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = ImVec4(0.00, 0.55, 0.55, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = ImVec4(0.00, 0.65, 0.65, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = ImVec4(0.00, 0.75, 0.75, 1.00)
+end
+    },
+    {
+    change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.08, 0.08, 0.12, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.29, 0.16, 0.48, 0.54)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.59, 0.26, 0.98, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.59, 0.26, 0.98, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.04, 0.04, 0.06, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.29, 0.16, 0.48, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgCollapsed]       = ImVec4(0.00, 0.00, 0.00, 0.51)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.59, 0.26, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.52, 0.24, 0.88, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.59, 0.26, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.59, 0.26, 0.98, 0.40)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.59, 0.26, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.53, 0.06, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.59, 0.26, 0.98, 0.31)
+    imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.59, 0.26, 0.98, 0.80)
+    imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(0.59, 0.26, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.50, 0.43, 0.50, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.SeparatorHovered]       = ImVec4(0.59, 0.26, 0.98, 0.78)
+    imgui.GetStyle().Colors[imgui.Col.SeparatorActive]        = ImVec4(0.59, 0.26, 0.98, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGrip]             = ImVec4(0.59, 0.26, 0.98, 0.25)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripHovered]      = ImVec4(0.59, 0.26, 0.98, 0.67)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripActive]       = ImVec4(0.59, 0.26, 0.98, 0.95)
+    imgui.GetStyle().Colors[imgui.Col.TextSelectedBg]         = ImVec4(0.59, 0.26, 0.98, 0.35)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(0.50, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.53, 0.06, 0.98, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.ChildBg]                = ImVec4(0.10, 0.10, 0.12, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.53, 0.06, 0.98, 0.70)
+    imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(0.50, 0.43, 0.50, 0.50)
+    imgui.GetStyle().Colors[imgui.Col.BorderShadow]           = ImVec4(0.00, 0.00, 0.00, 0.00)
+    imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = ImVec4(0.14, 0.14, 0.18, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = ImVec4(0.02, 0.02, 0.03, 0.53)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = ImVec4(0.31, 0.31, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = ImVec4(0.41, 0.41, 0.45, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = ImVec4(0.51, 0.51, 0.55, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotLines]              = ImVec4(0.61, 0.61, 0.75, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotLinesHovered]       = ImVec4(1.00, 0.43, 0.85, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotHistogram]          = ImVec4(0.90, 0.70, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotHistogramHovered]   = ImVec4(1.00, 0.60, 1.00, 1.00)
+end
+    },
+    {
+    change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.90, 0.90, 0.90, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.80, 0.80, 0.80, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.70, 0.70, 0.70, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.85, 0.85, 0.85, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.75, 0.75, 0.75, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgCollapsed]       = ImVec4(0.95, 0.95, 0.95, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.20, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.60, 0.60, 0.60, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.50, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.80, 0.80, 0.80, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.70, 0.70, 0.70, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.60, 0.60, 0.60, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.85, 0.85, 0.85, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.75, 0.75, 0.75, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(0.65, 0.65, 0.65, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(0.00, 0.00, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(0.50, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(0.70, 0.70, 0.70, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.75, 0.75, 0.75, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGrip]             = ImVec4(0.80, 0.80, 0.80, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripHovered]      = ImVec4(0.70, 0.70, 0.70, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ResizeGripActive]       = ImVec4(0.60, 0.60, 0.60, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotLines]              = ImVec4(0.40, 0.40, 0.40, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotLinesHovered]       = ImVec4(0.20, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotHistogram]          = ImVec4(0.50, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PlotHistogramHovered]   = ImVec4(0.30, 0.30, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(1.00, 1.00, 1.00, 1.00)
+end
+    },
+    {
+    change = function()
+    local ImVec4 = imgui.ImVec4
+    imgui.SwitchContext()
+    imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.02, 0.02, 0.02, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(0.15, 0.15, 0.15, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(0.20, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(0.25, 0.25, 0.25, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.10, 0.10, 0.10, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.15, 0.15, 0.15, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.20, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.30, 0.30, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.35, 0.35, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(0.50, 0.50, 0.50, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.30, 0.30, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(0.20, 0.20, 0.20, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(0.30, 0.60, 0.90, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.30, 0.60, 0.90, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.40, 0.70, 1.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.25, 0.25, 0.25, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.30, 0.30, 0.30, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(0.35, 0.35, 0.35, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.35, 0.35, 0.35, 1.00)
+end
+    }
+}
 
-imgui.GetStyle().PopupBorderSize = 1
-imgui.GetStyle().FrameBorderSize = 1
-imgui.GetStyle().TabBorderSize = 1
-imgui.GetStyle().WindowRounding = 8
-imgui.GetStyle().ChildRounding = 8
-imgui.GetStyle().FrameRounding = 8
-imgui.GetStyle().PopupRounding = 8
-imgui.GetStyle().ScrollbarRounding = 8
-imgui.GetStyle().GrabRounding = 8
-imgui.GetStyle().TabRounding = 8
-
-imgui.GetStyle().Colors[imgui.Col.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00);
-imgui.GetStyle().Colors[imgui.Col.TextDisabled]           = ImVec4(1.00, 1.00, 1.00, 0.43);
-imgui.GetStyle().Colors[imgui.Col.WindowBg]               = ImVec4(0.00, 0.00, 0.00, 0.90);
-imgui.GetStyle().Colors[imgui.Col.ChildBg]                = ImVec4(1.00, 1.00, 1.00, 0.07);
-imgui.GetStyle().Colors[imgui.Col.PopupBg]                = ImVec4(0.00, 0.00, 0.00, 0.94);
-imgui.GetStyle().Colors[imgui.Col.Border]                 = ImVec4(1.00, 1.00, 1.00, 0.00);
-imgui.GetStyle().Colors[imgui.Col.BorderShadow]           = ImVec4(0.00, 0.00, 1.00, 0.32);
-imgui.GetStyle().Colors[imgui.Col.FrameBg]                = ImVec4(1.00, 1.00, 1.00, 0.09);
-imgui.GetStyle().Colors[imgui.Col.FrameBgHovered]         = ImVec4(1.00, 1.00, 1.00, 0.17);
-imgui.GetStyle().Colors[imgui.Col.FrameBgActive]          = ImVec4(1.00, 1.00, 1.00, 0.26);
-imgui.GetStyle().Colors[imgui.Col.TitleBg]                = ImVec4(0.00, 0.00, 0.19, 1.00);
-imgui.GetStyle().Colors[imgui.Col.TitleBgActive]          = ImVec4(0.00, 0.00, 0.46, 1.00);
-imgui.GetStyle().Colors[imgui.Col.TitleBgCollapsed]       = ImVec4(0.00, 0.00, 0.20, 1.00);
-imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = ImVec4(0.14, 0.03, 0.03, 1.00);
-imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = ImVec4(0.00, 0.00, 0.19, 0.53);
-imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = ImVec4(1.00, 1.00, 1.00, 0.11);
-imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = ImVec4(1.00, 1.00, 1.00, 0.24);
-imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = ImVec4(1.00, 1.00, 1.00, 0.35);
-imgui.GetStyle().Colors[imgui.Col.CheckMark]              = ImVec4(1.00, 1.00, 1.00, 1.00);
-imgui.GetStyle().Colors[imgui.Col.SliderGrab]             = ImVec4(0.00, 0.00, 1.00, 0.34);
-imgui.GetStyle().Colors[imgui.Col.SliderGrabActive]       = ImVec4(0.00, 0.00, 1.00, 0.51);
-imgui.GetStyle().Colors[imgui.Col.Button]                 = ImVec4(0.00, 0.00, 1.00, 0.19);
-imgui.GetStyle().Colors[imgui.Col.ButtonHovered]          = ImVec4(0.00, 0.00, 1.00, 0.31);
-imgui.GetStyle().Colors[imgui.Col.ButtonActive]           = ImVec4(0.00, 0.00, 1.00, 0.46);
-imgui.GetStyle().Colors[imgui.Col.Header]                 = ImVec4(0.00, 0.00, 1.00, 0.19);
-imgui.GetStyle().Colors[imgui.Col.HeaderHovered]          = ImVec4(0.00, 0.00, 1.00, 0.30);
-imgui.GetStyle().Colors[imgui.Col.HeaderActive]           = ImVec4(0.00, 0.00, 1.00, 0.50);
-imgui.GetStyle().Colors[imgui.Col.Separator]              = ImVec4(0.00, 0.00, 1.00, 0.41);
-imgui.GetStyle().Colors[imgui.Col.SeparatorHovered]       = ImVec4(1.00, 1.00, 1.00, 0.78);
-imgui.GetStyle().Colors[imgui.Col.SeparatorActive]        = ImVec4(1.00, 1.00, 1.00, 1.00);
-imgui.GetStyle().Colors[imgui.Col.ResizeGrip]             = ImVec4(0.00, 0.00, 0.19, 0.53);
-imgui.GetStyle().Colors[imgui.Col.ResizeGripHovered]      = ImVec4(0.00, 0.00, 0.43, 0.75);
-imgui.GetStyle().Colors[imgui.Col.ResizeGripActive]       = ImVec4(0.00, 0.00, 0.53, 0.95);
-imgui.GetStyle().Colors[imgui.Col.Tab]                    = ImVec4(0.00, 0.00, 1.00, 0.27);
-imgui.GetStyle().Colors[imgui.Col.TabHovered]             = ImVec4(0.00, 0.00, 1.00, 0.48);
-imgui.GetStyle().Colors[imgui.Col.TabActive]              = ImVec4(0.00, 0.00, 1.00, 0.60);
-imgui.GetStyle().Colors[imgui.Col.TabUnfocused]           = ImVec4(0.00, 0.00, 1.00, 0.27);
-imgui.GetStyle().Colors[imgui.Col.TabUnfocusedActive]     = ImVec4(0.00, 0.00, 1.00, 0.54);
-imgui.GetStyle().Colors[imgui.Col.PlotLines]              = ImVec4(0.61, 0.61, 0.61, 1.00);
-imgui.GetStyle().Colors[imgui.Col.PlotLinesHovered]       = ImVec4(0.00, 0.43, 1.00, 1.00);
-imgui.GetStyle().Colors[imgui.Col.PlotHistogram]          = ImVec4(0.00, 0.70, 0.90, 1.00);
-imgui.GetStyle().Colors[imgui.Col.PlotHistogramHovered]   = ImVec4(0.00, 0.60, 1.00, 1.00);
-imgui.GetStyle().Colors[imgui.Col.TextSelectedBg]         = ImVec4(1.00, 1.00, 1.00, 0.35);
-imgui.GetStyle().Colors[imgui.Col.DragDropTarget]         = ImVec4(1.00, 1.00, 0.00, 0.90);
-imgui.GetStyle().Colors[imgui.Col.NavHighlight]           = ImVec4(0.26, 0.59, 0.98, 1.00);
-imgui.GetStyle().Colors[imgui.Col.NavWindowingHighlight]  = ImVec4(1.00, 1.00, 1.00, 0.70);
-imgui.GetStyle().Colors[imgui.Col.NavWindowingDimBg]      = ImVec4(0.80, 0.80, 0.80, 0.20);
-imgui.GetStyle().Colors[imgui.Col.ModalWindowDimBg]      = ImVec4(0.80, 0.80, 0.80, 0.35);
+function decor()
+    imgui.SwitchContext()
+    local ImVec4 = imgui.ImVec4
+    imgui.GetStyle().WindowPadding = imgui.ImVec2(5, 5)
+    imgui.GetStyle().FramePadding = imgui.ImVec2(5, 5)
+    imgui.GetStyle().ItemSpacing = imgui.ImVec2(5, 5)
+    imgui.GetStyle().ItemInnerSpacing = imgui.ImVec2(2, 2)
+    imgui.GetStyle().TouchExtraPadding = imgui.ImVec2(0, 0)
+    imgui.GetStyle().IndentSpacing = 0
+    imgui.GetStyle().ScrollbarSize = 10
+    imgui.GetStyle().GrabMinSize = 10
+    imgui.GetStyle().WindowBorderSize = 1
+    imgui.GetStyle().ChildBorderSize = 1
+    imgui.GetStyle().PopupBorderSize = 1
+    imgui.GetStyle().FrameBorderSize = 1
+    imgui.GetStyle().TabBorderSize = 1
+    imgui.GetStyle().WindowRounding = 8
+    imgui.GetStyle().ChildRounding = 8
+    imgui.GetStyle().FrameRounding = 8
+    imgui.GetStyle().PopupRounding = 8
+    imgui.GetStyle().ScrollbarRounding = 8
+    imgui.GetStyle().GrabRounding = 8
+    imgui.GetStyle().TabRounding = 8
 end
 
+
 imgui.OnInitialize(function()
-    theme()
+    decor()
+theme[colorListNumber[0]+1].change()
     imgui.GetIO().IniFilename = nil
     local config = imgui.ImFontConfig()
     config.MergeMode = true
     config.PixelSnapH = true
     iconRanges = imgui.new.ImWchar[3](faicons.min_range, faicons.max_range, 0)
     imgui.GetIO().Fonts:AddFontFromMemoryCompressedBase85TTF(faicons.get_font_data_base85('solid'), 14, config, iconRanges)
-    if doesFileExist(getWorkingDirectory()..'\\sounds\\logo.png') then -- находим необходимую картинку с названием example.png в папке moonloader/resource/
-        imhandle = imgui.CreateTextureFromFile(getWorkingDirectory() .. '\\sounds\\logo.png') -- если найдена, то записываем в переменную хендл картинки
+    if doesFileExist(getWorkingDirectory()..'\\sounds\\logo.png') then
+        imhandle = imgui.CreateTextureFromFile(getWorkingDirectory() .. '\\sounds\\logo.png')
     end
 end)
