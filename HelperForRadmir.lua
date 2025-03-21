@@ -1,5 +1,5 @@
 script_name("HelperForRadmir")
-script_version("v2.6")
+script_version("v2.7")
 
 local name = "[Helper] "
 local color1 = "{FFD700}" 
@@ -46,24 +46,48 @@ end
 
 local sounds = {
     {
-        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest1.mp3',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest1.mp3',
         file_name = 'arrest1.mp3',
     },
     {
-        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest2.mp3',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest2.mp3',
         file_name = 'arrest2.mp3',
     },
     {
-        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest3.mp3',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest3.mp3',
         file_name = 'arrest3.mp3',
     },
     {
-        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest4.mp3',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest4.mp3',
         file_name = 'arrest4.mp3',
     },
     {
-        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/arrest5.mp3',
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest5.mp3',
         file_name = 'arrest5.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest6.mp3',
+        file_name = 'arrest6.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest7.mp3',
+        file_name = 'arrest7.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest8.mp3',
+        file_name = 'arrest8.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest9.mp3',
+        file_name = 'arrest9.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest10.mp3',
+        file_name = 'arrest10.mp3',
+    },
+    {
+        url = 'https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/sounds/arrest11.mp3',
+        file_name = 'arrest11.mp3',
     },
     {
         url = 'https://raw.githubusercontent.com/Andergr0ynd/helperforradmir/refs/heads/main/koap/koap01.txt',
