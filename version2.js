@@ -1,1 +1,4 @@
-
+{
+  "latest": "v2.602",
+  "updateurl": "https://github.com/Andergr0ynd/helperforradmir/raw/refs/heads/main/HelperForRadmir.luac"
+}
