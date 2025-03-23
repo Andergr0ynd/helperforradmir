@@ -229,7 +229,6 @@ local settings = ini.load({
         castom_miranda = 'miranda',
         castom_photo = 'photo',
         castom_mcheckdocs = 'mcheckdocs',
-        castom_toner = 'toner',
     },
     hotkey_cfg = {
         bind = '[]',
@@ -287,7 +286,6 @@ local castommattach = new.char[24](u8(settings.dop.castom_mattach))
 local castommiranda = new.char[24](u8(settings.dop.castom_miranda))
 local castomphoto = new.char[24](u8(settings.dop.castom_photo))
 local castommcheckdocs = new.char[24](u8(settings.dop.castom_mcheckdocs))
-local castomtoner = new.char[24](u8(settings.dop.castom_toner))
 
 imgui.OnFrame(function() return WinState[0] end, function(player)
     imgui.SetNextWindowPos(imgui.ImVec2(500, 500), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
@@ -387,7 +385,6 @@ end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /miranda', 'Команду', castommiranda, 24) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /photo', 'Команду', castomphoto, 24) then end
     imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /mcheckdocs', 'Команду', castommcheckdocs, 24) then end
-    imgui.SetNextItemWidth(144)if imgui.InputTextWithHint('Команда /toner', 'Команду', castomtoner, 24) then end
     if imgui.Button(faicons('FLOPPY_DISK') ..' Сохранить настройки', imgui.ImVec2(155, 30)) then
     settings.dop.castom_mhelp = u8:decode(str(castommhelp))
     settings.dop.castom_msm = u8:decode(str(castommsm))
@@ -414,7 +411,6 @@ end
     settings.dop.castom_miranda = u8:decode(str(castommiranda))
     settings.dop.castom_photo = u8:decode(str(castomphoto))
     settings.dop.castom_mcheckdocs = u8:decode(str(castommcheckdocs))
-    settings.dop.castom_toner = u8:decode(str(castomtoner))
     ini.save(settings, 'MVDHelper.ini')
     thisScript():reload()
 end
@@ -1139,25 +1135,6 @@ imgui.OnFrame(function() return WinState1[0] end, function(player)
     end
     imgui.EndPopup()
     end
-
-        imgui.SameLine()
-
-    if imgui.Button('Тонировка', imgui.ImVec2(230, 30)) then
-    lua_thread.create(function()
-    wait(900)
-    sampSendChat(u8:decode'Гражданин, Вы будете задержаны до выяснения обстоятельств.')
-    wait(900)
-    sampSendChat(u8:decode'Если вы не согласны с задержанием, то Вы можете обратиться в суд.')
-    wait(900)
-    sampSendChat(u8:decode'Вы имеете право на адвоката.')
-    wait(900)
-    sampSendChat(u8:decode'/n ->>> /adlist')
-    wait(900)
-    sampSendChat(u8:decode'Советуем хранить молчание.')
-    wait(900)
-    sampSendChat(u8:decode'Так как все Ваши слова будут использованы против Вас.')
-        end)
-    end
         imgui.End()
     end)
 
@@ -1319,7 +1296,6 @@ end
     sampRegisterChatCommand(settings.dop.castom_miranda, miranda)
     sampRegisterChatCommand(settings.dop.castom_photo, photo)
     sampRegisterChatCommand(settings.dop.castom_mcheckdocs, mcheckdocs)
-    sampRegisterChatCommand(settings.dop.castom_toner, toner)
     sampRegisterChatCommand('koap1', koap1)
     sampRegisterChatCommand('koap2', koap2)
     sampRegisterChatCommand('koap3', koap3)
@@ -1890,18 +1866,6 @@ function mcheckdocs(arg)
             else
             sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
         end
-    end
-
-function toner()
-    lua_thread.create(function()
-    sampSendChat(u8:decode'/do Дверь перед "Имя"ом закрыта.')
-    wait(900)
-    sampSendChat(u8:decode'/me импульсивным движением ноги начал выбивать дверь')
-    wait(900)
-    sampSendChat(u8:decode'/do Через какой-то промежуток времени "Имя" выбыл дверь.')
-    wait(900)
-    sampSendChat('/break_door')
-        end)
     end
 
 function koap1()
