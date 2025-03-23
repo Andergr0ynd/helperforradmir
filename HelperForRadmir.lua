@@ -622,7 +622,7 @@ imgui.OnFrame(function() return WinState1[0] end, function(player)
     if imgui.Button('Надеть наручники', imgui.ImVec2(230, 30)) then
     imgui.OpenPopup('Одеть наручники | /cuff')
     end
-    if imgui.BeginPopupModal('Одеть аручники | /cuff', _, imgui.WindowFlags.NoResize, main_window_state) then
+    if imgui.BeginPopupModal('Одеть наручники | /cuff', _, imgui.WindowFlags.NoResize, main_window_state) then
 	imgui.SetWindowSizeVec2(imgui.ImVec2(370, 258))
     imgui.Text('Введите ID')
     imgui.InputTextWithHint('', 'Пример: 123', inputField, 256)
