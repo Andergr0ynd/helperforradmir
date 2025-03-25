@@ -1083,7 +1083,7 @@ imgui.OnFrame(function() return WinState1[0] end, function(player)
     wait(900)
     sampSendChat(u8:decode'/do Человек распознан')
     wait(900)
-    sampSendChat("/id "..arg)
+    sampSendChat("/id "..text)
         end)
             else
             sampAddChatMessage(tag .. u8:decode'{006AFF}MVD Helper: {FFFFFF}Похоже, ты не ввел ID...', -1)
