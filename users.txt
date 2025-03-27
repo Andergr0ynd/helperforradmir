@@ -20,3 +20,4 @@ Senya_Donskoy: 31.12.2030
 Straight_Monopoly: 31.12.2030
 Vasya_Kotow: 31.02.2025
 Kozus_Sokolov: 31.12.2030
+Rinat_Bugor: 31.12.2030
